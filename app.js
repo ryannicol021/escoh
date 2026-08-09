@@ -661,7 +661,7 @@ async function handleGenerate() {
 
 
     const blob =
-      generateDocx(
+      await generateDocx(
         templateBuffer,
         currentData
       );
@@ -1156,8 +1156,11 @@ async function handlePdfDownload() {
 
   try {
 
+    const docxArrayBuffer =
+      await currentDocxBlob.arrayBuffer();
+    
     await docx.renderAsync(
-      currentDocxBlob,
+      docxArrayBuffer,
       renderArea,
       null,
       {
