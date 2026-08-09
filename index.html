@@ -1,1 +1,682 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
 
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1"
+    />
+
+    <meta
+      name="description"
+      content="Eagle Scout Court of Honor ceremony script generator"
+    />
+
+    <title>Eagle Scout Court of Honor Script Generator</title>
+  </head>
+
+  <body>
+    <div id="app">
+
+      <header class="site-header">
+        <div class="header-inner">
+          <div class="eyebrow">Troop 690</div>
+
+          <h1>Eagle Scout Court of Honor</h1>
+
+          <p class="subtitle">
+            Ceremony Script Generator
+          </p>
+        </div>
+      </header>
+
+      <main class="container">
+
+        <section class="intro-card">
+          <h2>Prepare the ceremony script</h2>
+
+          <p>
+            Complete the information below to create a personalized
+            Eagle Scout Court of Honor ceremony script.
+          </p>
+
+          <div class="notice">
+            <strong>How this form works:</strong>
+            The questions are listed in the order that the information
+            first appears in the ceremony script.
+          </div>
+
+          <div class="notice">
+            <strong>Names:</strong>
+            If someone normally goes by their middle name, you may enter
+            their middle and last name anywhere this form asks for a
+            first and last name.
+          </div>
+
+          <div class="privacy-note">
+            <strong>Privacy:</strong>
+            Everything is processed in your browser. Your answers are
+            not sent to a server.
+          </div>
+        </section>
+
+        <form id="ceremony-form" novalidate>
+
+          <section class="form-section">
+            <div class="section-heading">
+              <span class="section-number">1</span>
+              <div>
+                <h2>Eagle Scout Candidate</h2>
+                <p>The person this ceremony is being held for.</p>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="ESC-FullName">
+                Eagle Scout Candidate's full name
+                <span class="required">*</span>
+              </label>
+
+              <p class="help">
+                Enter the candidate's first and last name.
+              </p>
+
+              <input
+                id="ESC-FullName"
+                name="ESC-FullName"
+                type="text"
+                autocomplete="name"
+                required
+              />
+            </div>
+          </section>
+
+
+          <section class="form-section">
+            <div class="section-heading">
+              <span class="section-number">2</span>
+              <div>
+                <h2>Scoutmaster</h2>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="SM-Name">
+                Scoutmaster's full name
+                <span class="required">*</span>
+              </label>
+
+              <input
+                id="SM-Name"
+                name="SM-Name"
+                type="text"
+                autocomplete="name"
+                required
+              />
+            </div>
+          </section>
+
+
+          <section class="form-section">
+            <div class="section-heading">
+              <span class="section-number">3</span>
+              <div>
+                <h2>Senior Patrol Leader</h2>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="SPL-Name">
+                Senior Patrol Leader's full name
+                <span class="required">*</span>
+              </label>
+
+              <p class="help">
+                This should be the active Senior Patrol Leader, if
+                available. Otherwise use the Assistant Senior Patrol
+                Leader, if available. If neither is available, choose
+                the most suitable active Scout to serve as Acting
+                Senior Patrol Leader.
+              </p>
+
+              <input
+                id="SPL-Name"
+                name="SPL-Name"
+                type="text"
+                autocomplete="name"
+                required
+              />
+            </div>
+          </section>
+
+
+          <section class="form-section">
+            <div class="section-heading">
+              <span class="section-number">4</span>
+              <div>
+                <h2>Chaplain</h2>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="Chp-Name">
+                Chaplain's full name
+                <span class="required">*</span>
+              </label>
+
+              <p class="help">
+                Enter the first and last name. If the person has an
+                honorific title such as Rev., Fr., or Msgr., include it
+                here.
+              </p>
+
+              <input
+                id="Chp-Name"
+                name="Chp-Name"
+                type="text"
+                required
+              />
+            </div>
+
+            <div class="field">
+              <label for="Chp-Title">
+                Chaplain's title
+                <span class="required">*</span>
+              </label>
+
+              <p class="help">
+                Examples: "Pastor of St. William the Abbot" or
+                "Chaplain Aide of Troop 690".
+              </p>
+
+              <input
+                id="Chp-Title"
+                name="Chp-Title"
+                type="text"
+                required
+              />
+            </div>
+          </section>
+
+
+          <section class="form-section">
+            <div class="section-heading">
+              <span class="section-number">5</span>
+              <div>
+                <h2>Master of Ceremonies</h2>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="MC-Name">
+                Master of Ceremonies' full name
+                <span class="required">*</span>
+              </label>
+
+              <p class="help">
+                This should be a fellow Troop 690 Eagle Scout, if
+                available.
+              </p>
+
+              <input
+                id="MC-Name"
+                name="MC-Name"
+                type="text"
+                required
+              />
+            </div>
+          </section>
+
+
+          <section class="form-section">
+            <div class="section-heading">
+              <span class="section-number">6</span>
+              <div>
+                <h2>Eagle Pledge</h2>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="ES-Name">
+                Eagle Pledge reader's full name
+                <span class="required">*</span>
+              </label>
+
+              <p class="help">
+                This person must be an Eagle Scout and should be a
+                fellow Troop 690 Eagle Scout, if available.
+              </p>
+
+              <input
+                id="ES-Name"
+                name="ES-Name"
+                type="text"
+                required
+              />
+            </div>
+          </section>
+
+
+          <section class="form-section">
+            <div class="section-heading">
+              <span class="section-number">7</span>
+              <div>
+                <h2>Eagle Challenge</h2>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="EC-Name">
+                Eagle Challenge reader's full name
+                <span class="required">*</span>
+              </label>
+
+              <p class="help">
+                This person reads the Eagle Challenge and declares the
+                candidate to be an Eagle Scout.
+              </p>
+
+              <input
+                id="EC-Name"
+                name="EC-Name"
+                type="text"
+                required
+              />
+            </div>
+          </section>
+
+
+          <section class="form-section">
+            <div class="section-heading">
+              <span class="section-number">8</span>
+              <div>
+                <h2>Parents</h2>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="A-Name">
+                Eagle Scout Candidate's mother's first name
+                <span class="required">*</span>
+              </label>
+
+              <input
+                id="A-Name"
+                name="A-Name"
+                type="text"
+                required
+              />
+            </div>
+
+            <div class="field">
+              <label for="B-Name">
+                Eagle Scout Candidate's father's first name
+                <span class="required">*</span>
+              </label>
+
+              <input
+                id="B-Name"
+                name="B-Name"
+                type="text"
+                required
+              />
+            </div>
+          </section>
+
+
+          <section class="form-section">
+            <div class="section-heading">
+              <span class="section-number">9</span>
+              <div>
+                <h2>Eagle Project</h2>
+              </div>
+            </div>
+
+            <div class="field-grid">
+
+              <div class="field">
+                <label for="PJMO">
+                  Completion month
+                  <span class="required">*</span>
+                </label>
+
+                <select id="PJMO" name="PJMO" required>
+                  <option value="">Select month...</option>
+                  <option>January</option>
+                  <option>February</option>
+                  <option>March</option>
+                  <option>April</option>
+                  <option>May</option>
+                  <option>June</option>
+                  <option>July</option>
+                  <option>August</option>
+                  <option>September</option>
+                  <option>October</option>
+                  <option>November</option>
+                  <option>December</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="PJYR">
+                  Completion year
+                  <span class="required">*</span>
+                </label>
+
+                <input
+                  id="PJYR"
+                  name="PJYR"
+                  type="number"
+                  min="1900"
+                  max="2100"
+                  step="1"
+                  inputmode="numeric"
+                  required
+                />
+              </div>
+
+            </div>
+
+            <div class="field">
+              <label for="SVHR">
+                Approximate service hours
+                <span class="required">*</span>
+              </label>
+
+              <input
+                id="SVHR"
+                name="SVHR"
+                type="number"
+                min="0"
+                step="1"
+                inputmode="numeric"
+                required
+              />
+            </div>
+
+            <div class="field">
+              <label for="Project">
+                Brief description of the Eagle Project
+                <span class="required">*</span>
+              </label>
+
+              <p class="help">
+                Begin with a lowercase letter and do not include
+                punctuation at the end.
+              </p>
+
+              <p class="example">
+                Example:
+                <em>making and installing planters for the garden</em>
+              </p>
+
+              <input
+                id="Project"
+                name="Project"
+                type="text"
+                required
+              />
+            </div>
+
+            <div class="field">
+              <label for="BNFCRY">
+                Eagle Project beneficiary
+                <span class="required">*</span>
+              </label>
+
+              <p class="help">
+                Use a shortened but recognizable name when possible.
+                For example, "St. William the Abbot" instead of
+                "St. William the Abbot Roman Catholic Church".
+              </p>
+
+              <input
+                id="BNFCRY"
+                name="BNFCRY"
+                type="text"
+                required
+              />
+            </div>
+
+            <div class="field">
+              <label for="BTOWN">
+                Beneficiary's town
+                <span class="required">*</span>
+              </label>
+
+              <input
+                id="BTOWN"
+                name="BTOWN"
+                type="text"
+                required
+              />
+            </div>
+          </section>
+
+
+          <section class="form-section">
+            <div class="section-heading">
+              <span class="section-number">10</span>
+              <div>
+                <h2>Scoutmaster's Minute</h2>
+              </div>
+            </div>
+
+            <div class="minute-help">
+              <p>
+                A suitable Scoutmaster's Minute can be selected for
+                this ceremony. Good topics include an Eagle's legacy,
+                the limited amount of time we have, and what it means
+                to be a leader.
+              </p>
+
+              <p>
+                Because this site has no backend and does not send
+                information to an external service, it cannot
+                automatically scrape arbitrary websites. Use the
+                search button below to find a suitable public source,
+                then paste the text you want the Scoutmaster to read.
+              </p>
+
+              <a
+                class="secondary-button"
+                href="https://www.google.com/search?q=Eagle+Scout+Scoutmaster%27s+Minute+legacy+leadership"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Search for a Scoutmaster's Minute
+              </a>
+            </div>
+
+            <div class="field">
+              <label for="Minute">
+                Scoutmaster's Minute
+                <span class="required">*</span>
+              </label>
+
+              <textarea
+                id="Minute"
+                name="Minute"
+                rows="10"
+                required
+                placeholder="Paste the Scoutmaster's Minute here..."
+              ></textarea>
+
+              <p class="help">
+                This text will replace the [Minute] placeholder in
+                your Word document.
+              </p>
+            </div>
+          </section>
+
+
+          <section class="form-section">
+            <div class="section-heading">
+              <span class="section-number">11</span>
+              <div>
+                <h2>Troop History</h2>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="JOINYR">
+                Year the Eagle Scout originally joined the troop
+                <span class="required">*</span>
+              </label>
+
+              <input
+                id="JOINYR"
+                name="JOINYR"
+                type="number"
+                min="1900"
+                max="2100"
+                step="1"
+                inputmode="numeric"
+                required
+              />
+            </div>
+
+            <div class="field">
+              <label for="EGLNUM">
+                Eagle Scout number in Troop 690 history
+                <span class="required">*</span>
+              </label>
+
+              <input
+                id="EGLNUM"
+                name="EGLNUM"
+                type="text"
+                placeholder="Example: 143rd"
+              />
+
+              <label class="checkbox-label">
+                <input
+                  id="EGLNUM-Unknown"
+                  type="checkbox"
+                />
+
+                I'm not sure — use "newest"
+              </label>
+
+              <p class="help">
+                If you cannot determine the number, simply use
+                "newest".
+              </p>
+            </div>
+          </section>
+
+
+          <div class="form-actions">
+            <button
+              type="submit"
+              class="primary-button"
+            >
+              Review Ceremony Information
+            </button>
+          </div>
+
+        </form>
+
+
+        <section
+          id="review-section"
+          class="review-section hidden"
+        >
+          <div class="section-heading">
+            <span class="section-number">✓</span>
+            <div>
+              <h2>Review</h2>
+              <p>Check the information before generating the script.</p>
+            </div>
+          </div>
+
+          <div id="review-content"></div>
+
+          <div
+            id="generation-error"
+            class="error-message hidden"
+          ></div>
+
+          <div class="form-actions review-actions">
+
+            <button
+              type="button"
+              id="back-button"
+              class="secondary-button"
+            >
+              Back to Form
+            </button>
+
+            <button
+              type="button"
+              id="generate-button"
+              class="primary-button"
+            >
+              Generate Script
+            </button>
+
+          </div>
+        </section>
+
+
+        <section
+          id="download-section"
+          class="download-section hidden"
+        >
+          <div class="success-icon">✓</div>
+
+          <h2>Your script is ready</h2>
+
+          <p>
+            The personalized ceremony script has been generated
+            entirely in your browser.
+          </p>
+
+          <div class="download-buttons">
+
+            <button
+              id="download-docx"
+              class="primary-button"
+            >
+              Download Word Document
+            </button>
+
+            <button
+              id="download-pdf"
+              class="secondary-button"
+            >
+              Download PDF
+            </button>
+
+          </div>
+
+          <div
+            id="pdf-status"
+            class="status-message hidden"
+          ></div>
+
+          <button
+            id="start-over"
+            class="text-button"
+          >
+            Start Over
+          </button>
+        </section>
+
+      </main>
+
+      <footer class="site-footer">
+        <p>
+          Eagle Scout Court of Honor Script Generator
+        </p>
+        <p>
+          All document processing occurs locally in your browser.
+        </p>
+      </footer>
+
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
