@@ -18,6 +18,7 @@
       MC-Name
       ES-Name
       EC-Name
+      EC-Title
       A-Name
       B-Name
       PJMO
@@ -350,6 +351,11 @@ function buildFieldData(
         formData["EC-Name"]
       ),
 
+    "EC-Title":
+      cleanWhitespace(
+        formData["EC-Title"]
+      ),
+
     "A-Name":
       cleanWhitespace(
         formData["A-Name"]
@@ -523,8 +529,13 @@ function renderReview(
     ],
 
     [
-      "Eagle Challenge Reader",
+      "Eagle Challenger",
       data["EC-Name"]
+    ],
+
+    [
+      "Eagle Challenger's Title",
+      data["EC-Title"]
     ],
 
     [
@@ -803,6 +814,7 @@ async function generateDocx(templateBuffer, data) {
     "MC-Name": "MC-Name",
     "ES-Name": "ES-Name",
     "EC-Name": "EC-Name",
+    "EC-Title": "EC-Title",
     "A-Name": "A-Name",
     "B-Name": "B-Name",
     "PJMO": "PJMO",
@@ -1260,9 +1272,15 @@ ${escapeHtml(data["ES-Name"])}
 </p>
 
 <p>
-<span class="label">Eagle Challenge Reader:</span>
+<span class="label">Eagle Challenger:</span>
 ${escapeHtml(data["EC-Name"])}
 </p>
+
+<p>
+<span class="label">Eagle Challenger's Title:</span>
+${escapeHtml(data["EC-Title"])}
+</p>
+
 
 </div>
 
