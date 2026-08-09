@@ -891,7 +891,7 @@ function generateDocx(templateBuffer, data) {
 
 
       const tag =
-        `{{${tagName}}}`;
+        `{${tagName}}`;
 
 
       /*
