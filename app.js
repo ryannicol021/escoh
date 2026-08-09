@@ -762,66 +762,49 @@ async function loadTemplate() {
   Then Docxtemplater performs the actual replacement.
 */
 
-function generateDocx(
-  templateBuffer,
-  data
-) {
+function generateDocx(templateBuffer, data) {
 
-  if (
-    typeof PizZip ===
-    "undefined"
-  ) {
-
+  if (typeof PizZip === "undefined") {
     throw new Error(
-      "PizZip did not load. " +
-      "Please refresh the page and try again."
+      "PizZip did not load. Please refresh the page and try again."
     );
-
   }
 
-
-  if (
-    typeof docxtemplater ===
-    "undefined"
-  ) {
-
+  if (typeof window.docxtemplater === "undefined") {
     throw new Error(
-      "Docxtemplater did not load. " +
-      "Please refresh the page and try again."
+      "Docxtemplater did not load. Please refresh the page and try again."
     );
-
   }
 
 
   let zip;
 
-
   try {
 
-    zip =
-      new PizZip(
-        templateBuffer
-      );
+    zip = new PizZip(templateBuffer);
 
   } catch (error) {
 
+    console.error(error);
+
     throw new Error(
-      "The template.docx file could not be opened. " +
-      "Make sure it is a valid Word .docx file."
+      "The template.docx file could not be opened."
     );
 
   }
 
 
   /*
-    These are the literal strings that exist
-    in your existing document.
-  */
+   * Plain-text placeholders in the Word document.
+   *
+   * These are intentionally the EXACT strings that
+   * appear in the Word document.
+   */
 
   const placeholders = [
     "ESC-FullName",
-    "ESC-Name",
     "SM-Name",
+    "ESC-Name",
     "SPL-Name",
     "Chp-Name",
     "Chp-Title",
@@ -843,79 +826,151 @@ function generateDocx(
 
 
   /*
-    Convert the literal placeholders to
-    Docxtemplater tags.
+   * Map the two bracketed placeholders to the names
+   * used by the form data.
+   */
 
-    For example:
+  const tagNames = {
 
-        ESC-FullName
+    "[Project]": "Project",
+    "[Minute]": "Minute"
 
-    becomes:
-
-        {{ESC-FullName}}
-  */
-
-  const xmlFiles =
-    Object.keys(
-      zip.files
-    ).filter(
-      path =>
-        path.endsWith(".xml") &&
-        !zip.files[path].dir
-    );
+  };
 
 
-  let foundPlaceholders =
-    new Set();
+  /*
+   * Get every XML file inside the DOCX.
+   *
+   * This includes:
+   *
+   * word/document.xml
+   * word/header1.xml
+   * word/header2.xml
+   * word/footer1.xml
+   * etc.
+   */
+
+  const xmlFiles = Object.keys(zip.files).filter(
+    path =>
+      path.endsWith(".xml") &&
+      !zip.files[path].dir
+  );
 
 
-  for (
-    const path of xmlFiles
-  ) {
+  const found = [];
+
+
+  /*
+   * Convert the plaintext placeholders into
+   * Docxtemplater tags.
+   *
+   * IMPORTANT:
+   *
+   * We work from the ORIGINAL XML for each file
+   * and build the replacement in one pass.
+   *
+   * This prevents one replacement from being
+   * accidentally processed again.
+   */
+
+  for (const path of xmlFiles) {
+
+    const originalXml =
+      zip.files[path].asText();
+
 
     let xml =
-      zip.files[path]
-        .asText();
+      originalXml;
 
 
-    for (
-      const placeholder
-      of placeholders
-    ) {
+    for (const placeholder of placeholders) {
+
+      const tagName =
+        tagNames[placeholder] ||
+        placeholder;
+
 
       const tag =
-        `{{${placeholder}}}`;
+        `{{${tagName}}}`;
 
 
       /*
-        The replacement is performed on the
-        raw XML before Docxtemplater sees it.
-      */
-
-      const occurrences =
-        countOccurrences(
-          xml,
-          placeholder
-        );
-
+       * Only replace the literal plaintext
+       * placeholder.
+       *
+       * Do NOT search for the tag after
+       * creating it.
+       */
 
       if (
-        occurrences > 0
+        originalXml.includes(
+          placeholder
+        )
       ) {
 
-        foundPlaceholders.add(
-          placeholder
-        );
+        /*
+         * Escape the placeholder for use in
+         * a regular expression.
+         */
+
+        const escaped =
+          placeholder.replace(
+            /[.*+?^${}()|[\]\\]/g,
+            "\\$&"
+          );
+
+
+        const regex =
+          new RegExp(
+            escaped,
+            "g"
+          );
 
 
         xml =
-          replaceAll(
-            xml,
-            placeholder,
+          xml.replace(
+            regex,
             tag
           );
 
+
+        found.push({
+          placeholder,
+          file: path
+        });
+
       }
+
+    }
+
+
+    /*
+     * DEBUG CHECK
+     *
+     * If the resulting XML contains malformed
+     * quadruple braces, stop immediately rather
+     * than handing it to Docxtemplater.
+     */
+
+    if (
+      xml.includes("{{{{")
+    ) {
+
+      console.error(
+        "Malformed template generated in:",
+        path
+      );
+
+      console.error(
+        xml
+      );
+
+      throw new Error(
+        "The template conversion produced malformed " +
+        "Docxtemplater tags in " +
+        path +
+        ". See the browser console for details."
+      );
 
     }
 
@@ -928,19 +983,29 @@ function generateDocx(
   }
 
 
-  /*
-    Warn about placeholders that don't appear
-    in the document.
+  console.log(
+    "Template placeholders found:",
+    found
+  );
 
-    This does not stop generation because
-    some templates may intentionally omit
-    certain fields.
-  */
+
+  /*
+   * Warn about placeholders that weren't found.
+   */
+
+  const foundNames =
+    new Set(
+      found.map(
+        item =>
+          item.placeholder
+      )
+    );
+
 
   const missing =
     placeholders.filter(
       placeholder =>
-        !foundPlaceholders.has(
+        !foundNames.has(
           placeholder
         )
     );
@@ -953,16 +1018,15 @@ function generateDocx(
 
 
   /*
-    Create the Docxtemplater instance.
-  */
+   * Give the finished ZIP to Docxtemplater.
+   */
 
   let doc;
-
 
   try {
 
     doc =
-      new docxtemplater(
+      new window.docxtemplater(
         zip,
         {
           paragraphLoop: true,
@@ -983,32 +1047,62 @@ function generateDocx(
     );
 
 
+    let details = "";
+
+
+    if (
+      error &&
+      error.properties
+    ) {
+
+      if (
+        error.properties.id
+      ) {
+
+        details +=
+          ` Error ID: ${error.properties.id}.`;
+
+      }
+
+
+      if (
+        error.properties.explanation
+      ) {
+
+        details +=
+          ` ${error.properties.explanation}`;
+
+      }
+
+    }
+
+
     throw new Error(
-      "The Word template could not be filled. " +
-      "This can happen if Word split one of the " +
-      "placeholders across formatting runs. " +
-      "See the browser console for details."
+      "The Word template could not be filled." +
+      details +
+      " See the browser console for details."
     );
 
   }
 
 
   /*
-    Generate the finished DOCX.
-  */
+   * Generate the finished DOCX.
+   */
 
   return doc
     .getZip()
     .generate({
       type: "blob",
+
       mimeType:
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+
       compression:
         "DEFLATE"
     });
 
 }
-
 
 /*
   Download DOCX
