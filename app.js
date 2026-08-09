@@ -1086,206 +1086,293 @@ function handleDocxDownload() {
   DOCX remains the primary/authoritative output.
 */
 
-async function handlePdfDownload() {
+function handlePdfDownload() {
 
-  if (
-    !currentDocxBlob ||
-    !currentData
-  ) {
-
+  if (!currentData) {
     return;
-
   }
 
-
-  if (
-    typeof docx.renderAsync !==
-    "function"
-  ) {
-
-    showPdfStatus(
-      "The DOCX preview library did not load. " +
-      "Please refresh the page and try again.",
-      true
-    );
-
-    return;
-
-  }
-
-
-  if (
-    typeof html2pdf !==
-    "function"
-  ) {
-
-    showPdfStatus(
-      "The PDF library did not load. " +
-      "Please refresh the page and try again.",
-      true
-    );
-
-    return;
-
-  }
-
-
-  downloadPdfButton.disabled =
-    true;
-
+  downloadPdfButton.disabled = true;
 
   showPdfStatus(
-    "Preparing the PDF..."
+    "Opening the print dialog..."
   );
 
-
-  const renderArea =
-    document.createElement(
-      "div"
+  const printWindow =
+    window.open(
+      "",
+      "_blank"
     );
 
-
-  renderArea.className =
-    "pdf-render-area";
-
-
-  document.body.appendChild(
-    renderArea
-  );
-
-
-  try {
-
-    const docxArrayBuffer =
-      await currentDocxBlob.arrayBuffer();
-    
-    await docx.renderAsync(
-      docxArrayBuffer,
-      renderArea,
-      null,
-      {
-        className:
-          "pdf-docx",
-
-        inWrapper:
-          true,
-
-        breakPages:
-          true,
-
-        ignoreWidth:
-          false,
-
-        ignoreHeight:
-          false
-      }
-    );
-
-
-    /*
-      Give the browser a moment to finish
-      laying out the rendered document.
-    */
-
-    await wait(
-      500
-    );
-
-
-    const filename =
-      `${sanitizeFilename(
-        currentData["ESC-FullName"]
-      )} - Eagle Scout Court of Honor.pdf`;
-
-
-    await html2pdf()
-      .set({
-
-        margin:
-          0,
-
-        filename,
-
-        image: {
-          type:
-            "jpeg",
-
-          quality:
-            0.98
-        },
-
-        html2canvas: {
-
-          scale:
-            2,
-
-          useCORS:
-            true,
-
-          backgroundColor:
-            "#ffffff"
-        },
-
-        jsPDF: {
-
-          unit:
-            "in",
-
-          format:
-            "letter",
-
-          orientation:
-            "portrait"
-        },
-
-        pagebreak: {
-
-          mode: [
-            "css",
-            "legacy",
-            "avoid-all"
-          ]
-
-        }
-
-      })
-      .from(
-        renderArea
-      )
-      .save();
-
+  if (!printWindow) {
 
     showPdfStatus(
-      "PDF downloaded successfully."
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      "PDF generation error:",
-      error
-    );
-
-
-    showPdfStatus(
-      "The PDF could not be generated. " +
-      "The Word document is still available.",
+      "The print window was blocked by your browser. " +
+      "Please allow pop-ups for this site and try again.",
       true
     );
 
+    downloadPdfButton.disabled = false;
 
-  } finally {
+    return;
+  }
 
-    renderArea.remove();
+  const data =
+    currentData;
 
-    downloadPdfButton.disabled =
-      false;
+  const escapeHtml =
+    value =>
+      String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
+  const fullName =
+    escapeHtml(
+      data["ESC-FullName"]
+    );
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+${fullName} - Eagle Scout Court of Honor
+</title>
+
+<style>
+
+@page {
+  size: Letter;
+  margin: 0.75in;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Georgia, "Times New Roman", serif;
+  color: #000;
+  background: #fff;
+  margin: 0;
+  font-size: 12pt;
+  line-height: 1.45;
+}
+
+h1 {
+  text-align: center;
+  font-size: 20pt;
+  margin: 0 0 8pt 0;
+}
+
+h2 {
+  text-align: center;
+  font-size: 15pt;
+  margin: 0 0 24pt 0;
+}
+
+.section {
+  margin-bottom: 18pt;
+}
+
+.label {
+  font-weight: bold;
+}
+
+p {
+  margin: 0 0 10pt 0;
+}
+
+.print-button {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+  padding: 10px 18px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+@media print {
+
+  .print-button {
+    display: none;
   }
 
 }
 
+</style>
+
+</head>
+
+<body>
+
+<button
+  class="print-button"
+  onclick="window.print()"
+>
+  Print / Save as PDF
+</button>
+
+<h1>
+Eagle Scout Court of Honor
+</h1>
+
+<h2>
+${fullName}
+</h2>
+
+<div class="section">
+
+<p>
+<span class="label">Scoutmaster:</span>
+${escapeHtml(data["SM-Name"])}
+</p>
+
+<p>
+<span class="label">Senior Patrol Leader:</span>
+${escapeHtml(data["SPL-Name"])}
+</p>
+
+<p>
+<span class="label">Chaplain:</span>
+${escapeHtml(data["Chp-Name"])}
+</p>
+
+<p>
+<span class="label">Chaplain's Title:</span>
+${escapeHtml(data["Chp-Title"])}
+</p>
+
+<p>
+<span class="label">Master of Ceremonies:</span>
+${escapeHtml(data["MC-Name"])}
+</p>
+
+<p>
+<span class="label">Eagle Pledge Reader:</span>
+${escapeHtml(data["ES-Name"])}
+</p>
+
+<p>
+<span class="label">Eagle Challenge Reader:</span>
+${escapeHtml(data["EC-Name"])}
+</p>
+
+</div>
+
+<div class="section">
+
+<p>
+<span class="label">Mother:</span>
+${escapeHtml(data["A-Name"])}
+</p>
+
+<p>
+<span class="label">Father:</span>
+${escapeHtml(data["B-Name"])}
+</p>
+
+</div>
+
+<div class="section">
+
+<p>
+<span class="label">Project Completion:</span>
+${escapeHtml(data["PJMO"])}
+${data["PJMO"] && data["PJYR"] ? " " : ""}
+${escapeHtml(data["PJYR"])}
+</p>
+
+<p>
+<span class="label">Project Service Hours:</span>
+${escapeHtml(data["SVHR"])}
+</p>
+
+<p>
+<span class="label">Project:</span>
+${escapeHtml(data["Project"])}
+</p>
+
+<p>
+<span class="label">Beneficiary:</span>
+${escapeHtml(data["BNFCRY"])}
+</p>
+
+<p>
+<span class="label">Beneficiary Town:</span>
+${escapeHtml(data["BTOWN"])}
+</p>
+
+</div>
+
+<div class="section">
+
+<p>
+<span class="label">Scoutmaster's Minute:</span>
+${escapeHtml(data["Minute"])}
+</p>
+
+<p>
+<span class="label">Year Joined Troop:</span>
+${escapeHtml(data["JOINYR"])}
+</p>
+
+<p>
+<span class="label">Eagle Number:</span>
+${escapeHtml(data["EGLNUM"])}
+</p>
+
+</div>
+
+<script>
+
+window.addEventListener(
+  "load",
+  function() {
+
+    setTimeout(
+      function() {
+        window.print();
+      },
+      300
+    );
+
+  }
+);
+
+window.addEventListener(
+  "afterprint",
+  function() {
+    window.close();
+  }
+);
+
+</script>
+
+</body>
+</html>
+`;
+
+  printWindow.document.open();
+
+  printWindow.document.write(
+    html
+  );
+
+  printWindow.document.close();
+
+  showPdfStatus(
+    "Print dialog opened. Choose \"Save as PDF\" as the printer."
+  );
+
+  downloadPdfButton.disabled = false;
+}
 
 /*
   Show PDF status
