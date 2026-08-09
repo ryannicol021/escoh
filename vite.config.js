@@ -4,6 +4,6 @@ export default defineConfig({
   base: "/escoh/",
   build: {
     outDir: "docs",
-    emptyOutDir: true,
-  },
+    emptyOutDir: true
+  }
 });
