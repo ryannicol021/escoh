@@ -781,7 +781,7 @@ function generateDocx(
 
 
   if (
-    typeof Docxtemplater ===
+    typeof docxtemplater ===
     "undefined"
   ) {
 
@@ -962,7 +962,7 @@ function generateDocx(
   try {
 
     doc =
-      new Docxtemplater(
+      new docxtemplater(
         zip,
         {
           paragraphLoop: true,
