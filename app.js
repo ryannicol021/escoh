@@ -1210,7 +1210,7 @@ function handleDocxDownload() {
   DOCX remains the primary/authoritative output.
 */
 
-function handlePdfDownload() {
+async function handlePdfDownload() {
 
   if (
     !currentDocxBlob ||
