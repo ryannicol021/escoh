@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Eagle Scout Court of Honor Dignitary Invitation Generator"
+  >
+
+  <title>
+    Dignitary Invitations | Eagle Scout Court of Honor
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+</head>
+
+<body>
+
+  <header class="site-header">
+
+    <div class="eyebrow">
+      TROOP 690
+    </div>
+
+    <h1>
+      Eagle Scout Court of Honor
+    </h1>
+
+    <p class="subtitle">
+      Dignitary Invitations
+    </p>
+
+  </header>
+
+
+  <main>
+
+    <section class="intro-card">
+
+      <h2>
+        Prepare the dignitary list
+      </h2>
+
+      <p>
+        Select the location of the Eagle Scout Court of Honor
+        to generate a list of local officials and other
+        dignitaries who should receive an invitation or
+        correspondence.
+      </p>
+
+      <div class="notice">
+        <strong>How this works:</strong>
+        Local officials are selected automatically based on
+        the location you choose. All applicable local officials
+        begin selected, and you may remove anyone you do not
+        wish to include.
+      </div>
+
+      <div class="privacy-note">
+        <strong>Privacy:</strong>
+        Everything is processed locally in your browser.
+        Nothing entered on this page is sent to a server by
+        this site.
+      </div>
+
+    </section>
+
+
+    <form id="dignitary-form">
+
+
+      <!-- EVENT INFORMATION -->
+
+      <section class="form-section">
+
+        <div class="section-heading">
+
+          <span class="section-number">
+            1
+          </span>
+
+          <div>
+
+            <h2>
+              Court of Honor Location
+            </h2>
+
+            <p>
+              Enter the address and select the location
+              associated with the Eagle Scout.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="street-address">
+            Street Address
+          </label>
+
+          <input
+            id="street-address"
+            name="street-address"
+            type="text"
+            autocomplete="street-address"
+            placeholder="12345 Main St"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label for="location">
+            Location
+            <span class="required">*</span>
+          </label>
+
+          <select
+            id="location"
+            name="location"
+            required
+          >
+
+            <option value="">
+              Select location...
+            </option>
+
+            <option value="Freeport 11520">
+              Freeport 11520
+            </option>
+
+            <option value="Merrick 11566">
+              Merrick 11566
+            </option>
+
+            <option value="Bellmore 11710">
+              Bellmore 11710
+            </option>
+
+            <option value="Wantagh 11793">
+              Wantagh 11793
+            </option>
+
+            <option value="Seaford 11783">
+              Seaford 11783
+            </option>
+
+            <option value="Massapequa 11758">
+              Massapequa 11758
+            </option>
+
+            <option value="Massapequa Park 11762">
+              Massapequa Park 11762
+            </option>
+
+            <option value="Amityville 11701">
+              Amityville 11701
+            </option>
+
+            <option value="Copiague 11726">
+              Copiague 11726
+            </option>
+
+            <option value="Lindenhurst 11757">
+              Lindenhurst 11757
+            </option>
+
+            <option value="Farmingdale 11735">
+              Farmingdale 11735
+            </option>
+
+          </select>
+
+        </div>
+
+      </section>
+
+
+      <!-- LOCAL OFFICIALS -->
+
+      <section
+        id="local-section"
+        class="form-section hidden"
+      >
+
+        <div class="section-heading">
+
+          <span class="section-number">
+            2
+          </span>
+
+          <div>
+
+            <h2>
+              Local Officials
+            </h2>
+
+            <p>
+              All applicable local officials are selected by
+              default. Uncheck anyone you do not want to invite.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="local-officials"
+          class="checkbox-list"
+        ></div>
+
+      </section>
+
+
+      <!-- ACTIONS -->
+
+      <div class="form-actions">
+
+        <button
+          type="submit"
+          class="primary-button"
+        >
+          Generate Dignitary List
+        </button>
+
+      </div>
+
+    </form>
+
+
+    <!-- RESULTS -->
+
+    <section
+      id="results-section"
+      class="download-section hidden"
+    >
+
+      <div class="success-icon">
+        ✓
+      </div>
+
+      <h2>
+        Dignitary List Ready
+      </h2>
+
+      <p>
+        Review the list below. When you are ready, print it
+        using your browser's print dialog.
+      </p>
+
+
+      <div
+        id="results-content"
+        class="dignitary-results"
+      ></div>
+
+
+      <div class="form-actions">
+
+        <button
+          type="button"
+          id="print-button"
+          class="primary-button"
+        >
+          Print Dignitary List
+        </button>
+
+        <button
+          type="button"
+          id="edit-button"
+          class="secondary-button"
+        >
+          Edit List
+        </button>
+
+      </div>
+
+
+      <button
+        type="button"
+        id="start-over"
+        class="text-button"
+      >
+        Start Over
+      </button>
+
+    </section>
+
+
+    <!-- ERROR -->
+
+    <div
+      id="error-message"
+      class="error-message hidden"
+    ></div>
+
+  </main>
+
+
+  <footer>
+
+    <p>
+      Eagle Scout Court of Honor Dignitary Invitations
+    </p>
+
+    <p>
+      Document processing occurs locally in your browser.
+    </p>
+
+  </footer>
+
+
+  <script src="dignitary.js"></script>
+
+</body>
+</html>
