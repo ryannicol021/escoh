@@ -1212,21 +1212,46 @@ function handleDocxDownload() {
 
 function handlePdfDownload() {
 
-  if (!currentData) {
+  if (
+    !currentDocxBlob ||
+    !currentData
+  ) {
+
     return;
+
   }
 
-  downloadPdfButton.disabled = true;
+
+  if (
+    typeof docx === "undefined" ||
+    typeof docx.renderAsync !== "function"
+  ) {
+
+    showPdfStatus(
+      "The document print preview could not be loaded. Please refresh the page and try again.",
+      true
+    );
+
+    return;
+
+  }
+
+
+  downloadPdfButton.disabled =
+    true;
+
 
   showPdfStatus(
-    "Opening the print dialog..."
+    "Preparing the completed Word document for printing..."
   );
+
 
   const printWindow =
     window.open(
       "",
       "_blank"
     );
+
 
   if (!printWindow) {
 
@@ -1236,29 +1261,22 @@ function handlePdfDownload() {
       true
     );
 
-    downloadPdfButton.disabled = false;
+    downloadPdfButton.disabled =
+      false;
 
     return;
+
   }
 
-  const data =
-    currentData;
 
-  const escapeHtml =
-    value =>
-      String(value ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+  /*
+   * Create the print window immediately so the browser
+   * does not block it while the DOCX is being rendered.
+   */
 
-  const fullName =
-    escapeHtml(
-      data["ESC-FullName"]
-    );
+  printWindow.document.open();
 
-  const html = `
+  printWindow.document.write(`
 <!DOCTYPE html>
 <html>
 <head>
@@ -1266,66 +1284,37 @@ function handlePdfDownload() {
 <meta charset="UTF-8">
 
 <title>
-${fullName} - Eagle Scout Court of Honor
+${sanitizeFilename(
+  currentData["ESC-FullName"]
+)} - Eagle Scout Court of Honor
 </title>
 
 <style>
 
-@page {
-  size: Letter;
-  margin: 0.75in;
-}
-
-* {
-  box-sizing: border-box;
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #ffffff;
 }
 
 body {
-  font-family: Georgia, "Times New Roman", serif;
-  color: #000;
-  background: #fff;
-  margin: 0;
-  font-size: 12pt;
-  line-height: 1.45;
+  padding: 0;
 }
 
-h1 {
-  text-align: center;
-  font-size: 20pt;
-  margin: 0 0 8pt 0;
-}
-
-h2 {
-  text-align: center;
-  font-size: 15pt;
-  margin: 0 0 24pt 0;
-}
-
-.section {
-  margin-bottom: 18pt;
-}
-
-.label {
-  font-weight: bold;
-}
-
-p {
-  margin: 0 0 10pt 0;
-}
-
-.print-button {
-  position: fixed;
-  top: 15px;
-  right: 15px;
-  padding: 10px 18px;
-  font-size: 14px;
-  cursor: pointer;
+#docx-container {
+  width: 100%;
 }
 
 @media print {
 
-  .print-button {
-    display: none;
+  @page {
+    margin: 0;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
   }
 
 }
@@ -1336,173 +1325,165 @@ p {
 
 <body>
 
-<button
-  class="print-button"
-  onclick="window.print()"
->
-  Print / Save as PDF
-</button>
-
-<h1>
-Eagle Scout Court of Honor
-</h1>
-
-<h2>
-${fullName}
-</h2>
-
-<div class="section">
-
-<p>
-<span class="label">Scoutmaster:</span>
-${escapeHtml(data["SM-Name"])}
-</p>
-
-<p>
-<span class="label">Senior Patrol Leader:</span>
-${escapeHtml(data["SPL-Name"])}
-</p>
-
-<p>
-<span class="label">Chaplain:</span>
-${escapeHtml(data["Chp-Name"])}
-</p>
-
-<p>
-<span class="label">Chaplain's Title:</span>
-${escapeHtml(data["Chp-Title"])}
-</p>
-
-<p>
-<span class="label">Master of Ceremonies:</span>
-${escapeHtml(data["MC-Name"])}
-</p>
-
-<p>
-<span class="label">Eagle Pledge Reader:</span>
-${escapeHtml(data["ES-Name"])}
-</p>
-
-<p>
-<span class="label">Eagle Challenger:</span>
-${escapeHtml(data["EC-Name"])}
-</p>
-
-<p>
-<span class="label">Eagle Challenger's Title:</span>
-${escapeHtml(data["EC-Title"])}
-</p>
-
-
-</div>
-
-<div class="section">
-
-<p>
-<span class="label">Mother:</span>
-${escapeHtml(data["A-Name"])}
-</p>
-
-<p>
-<span class="label">Father:</span>
-${escapeHtml(data["B-Name"])}
-</p>
-
-</div>
-
-<div class="section">
-
-<p>
-<span class="label">Project Completion:</span>
-${escapeHtml(data["PJMO"])}
-${data["PJMO"] && data["PJYR"] ? " " : ""}
-${escapeHtml(data["PJYR"])}
-</p>
-
-<p>
-<span class="label">Project Service Hours:</span>
-${escapeHtml(data["SVHR"])}
-</p>
-
-<p>
-<span class="label">Project:</span>
-${escapeHtml(data["Project"])}
-</p>
-
-<p>
-<span class="label">Beneficiary:</span>
-${escapeHtml(data["BNFCRY"])}
-</p>
-
-<p>
-<span class="label">Beneficiary Town:</span>
-${escapeHtml(data["BTOWN"])}
-</p>
-
-</div>
-
-<div class="section">
-
-<p>
-<span class="label">Scoutmaster's Minute:</span>
-${escapeHtml(data["Minute"])}
-</p>
-
-<p>
-<span class="label">Year Joined Troop:</span>
-${escapeHtml(data["JOINYR"])}
-</p>
-
-<p>
-<span class="label">Eagle Number:</span>
-${escapeHtml(data["EGLNUM"])}
-</p>
-
-</div>
-
-<script>
-
-window.addEventListener(
-  "load",
-  function() {
-
-    setTimeout(
-      function() {
-        window.print();
-      },
-      300
-    );
-
-  }
-);
-
-window.addEventListener(
-  "afterprint",
-  function() {
-    window.close();
-  }
-);
-
-</script>
+<div id="docx-container"></div>
 
 </body>
 </html>
-`;
-
-  printWindow.document.open();
-
-  printWindow.document.write(
-    html
-  );
+  `);
 
   printWindow.document.close();
 
+
+  const renderArea =
+    printWindow.document.getElementById(
+      "docx-container"
+    );
+
+
+  try {
+
+    await renderDocxForPrint(
+      renderArea,
+      printWindow
+    );
+
+  } catch (error) {
+
+    console.error(
+      "DOCX print rendering error:",
+      error
+    );
+
+
+    try {
+      printWindow.close();
+    } catch (_) {
+      // Ignore close errors.
+    }
+
+
+    showPdfStatus(
+      "The completed Word document could not be prepared for printing.",
+      true
+    );
+
+
+    downloadPdfButton.disabled =
+      false;
+
+
+    return;
+
+  }
+
+
   showPdfStatus(
-    "Print dialog opened. Choose \"Save as PDF\" as the printer."
+    "Print preview is ready. Choose Print or Save as PDF."
   );
 
-  downloadPdfButton.disabled = false;
+
+  downloadPdfButton.disabled =
+    false;
+
 }
+
+
+/*
+  Render the actual completed DOCX into the print window.
+*/
+
+async function renderDocxForPrint(
+  renderArea,
+  printWindow
+) {
+
+  await docx.renderAsync(
+    currentDocxBlob,
+    renderArea,
+    renderArea,
+    {
+
+      className:
+        "pdf-docx",
+
+      inWrapper:
+        true,
+
+      breakPages:
+        true,
+
+      ignoreWidth:
+        false,
+
+      ignoreHeight:
+        false,
+
+      ignoreFonts:
+        false,
+
+      hideWrapperOnPrint:
+        false,
+
+      renderHeaders:
+        true,
+
+      renderFooters:
+        true,
+
+      renderFootnotes:
+        true,
+
+      renderEndnotes:
+        true
+
+    }
+  );
+
+
+  /*
+   * Give the browser a moment to finish laying out
+   * the rendered Word document before printing.
+   */
+
+  await wait(300);
+
+
+  /*
+   * Print the actual rendered DOCX.
+   */
+
+  printWindow.focus();
+
+
+  printWindow.print();
+
+
+  /*
+   * Close the temporary print window after printing.
+   */
+
+  printWindow.addEventListener(
+    "afterprint",
+    function() {
+
+      setTimeout(
+        function() {
+
+          try {
+            printWindow.close();
+          } catch (_) {
+            // Ignore close errors.
+          }
+
+        },
+        100
+      );
+
+    }
+  );
+
+}
+
 
 /*
   Show PDF status
