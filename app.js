@@ -21,6 +21,7 @@
       EC-Title
       A-Name
       B-Name
+      [GrandparentSection]
       PJMO
       PJYR
       SVHR
@@ -366,6 +367,9 @@ function buildFieldData(
         formData["B-Name"]
       ),
 
+    "GP-Attendance":
+      formData["GP-Attendance"] || "",
+
     "PJMO":
       cleanWhitespace(
         formData["PJMO"]
@@ -549,6 +553,13 @@ function renderReview(
     ],
 
     [
+      "Grandparent Attendance",
+      getGrandparentAttendanceLabel(
+        data["GP-Attendance"]
+      )
+    ],
+
+    [
       "Project Completion",
       `${data["PJMO"]} ${data["PJYR"]}`
     ],
@@ -640,6 +651,30 @@ function renderReview(
 
 }
 
+function getGrandparentAttendanceLabel(
+  value
+) {
+
+  switch (value) {
+
+    case "none":
+      return "No grandparents";
+
+    case "grandfather":
+      return "One grandparent (grandfather)";
+
+    case "grandmother":
+      return "One grandparent (grandmother)";
+
+    case "multiple":
+      return "Multiple grandparents";
+
+    default:
+      return "";
+
+  }
+
+}
 
 /*
   Generate the DOCX
@@ -817,6 +852,7 @@ async function generateDocx(templateBuffer, data) {
     "EC-Title": "EC-Title",
     "A-Name": "A-Name",
     "B-Name": "B-Name",
+    "[GrandparentSection]": "GrandparentSection",
     "PJMO": "PJMO",
     "PJYR": "PJYR",
     "SVHR": "SVHR",
@@ -829,7 +865,57 @@ async function generateDocx(templateBuffer, data) {
 
   };
 
+  /*
+   * Build the grandparent section based on attendance.
+   *
+   * "none" is handled specially below because the entire
+   * Word paragraph must be removed rather than merely
+   * replacing its text with an empty string.
+   */
 
+  let grandparentSection = "";
+
+  switch (
+    data["GP-Attendance"]
+  ) {
+
+    case "grandfather":
+
+      grandparentSection =
+        `Your parents were not the only ones giving you that never-ending support, patience, and love. ` +
+        `${data["ESC-Name"]}, please present your grandfather with his Eagle grandparent pin.`;
+
+      break;
+
+
+    case "grandmother":
+
+      grandparentSection =
+        `Your parents were not the only ones giving you that never-ending support, patience, and love. ` +
+        `${data["ESC-Name"]}, please present your grandmother with her Eagle grandparent pin.`;
+
+      break;
+
+
+    case "multiple":
+
+      grandparentSection =
+        `Your parents were not the only ones giving you that never-ending support, patience, and love. ` +
+        `${data["ESC-Name"]}, please present your grandparents with their Eagle grandparent pins.`;
+
+      break;
+
+
+    case "none":
+
+      grandparentSection =
+        "";
+
+      break;
+
+  }
+
+  
   /*
    * XML-escape user-entered text.
    *
@@ -905,13 +991,36 @@ async function generateDocx(templateBuffer, data) {
    * remains untouched.
    */
 
-  for (const path of xmlFiles) {
+    for (const path of xmlFiles) {
 
     let xml = zip.files[path].asText();
 
 
     /*
+     * If no grandparents are attending, remove the entire
+     * paragraph containing [GrandparentSection].
+     *
+     * This is preferable to replacing the placeholder with
+     * an empty string because it also removes the paragraph
+     * itself and therefore preserves normal paragraph spacing.
+     */
+
+    if (
+      data["GP-Attendance"] === "none"
+    ) {
+
+      xml =
+        xml.replace(
+          /<w:p\b[^>]*>[\s\S]*?\[GrandparentSection\][\s\S]*?<\/w:p>/g,
+          ""
+        );
+
+    }
+
+
+    /*
      * Find each <w:t>...</w:t> text node.
+
      */
 
     xml = xml.replace(
@@ -931,9 +1040,12 @@ async function generateDocx(templateBuffer, data) {
           ) {
 
             const value =
-              escapeXml(
-                data[dataKey] ?? ""
-              );
+  escapeXml(
+    placeholder === "[GrandparentSection]"
+      ? grandparentSection
+      : data[dataKey] ?? ""
+  );
+
 
 
             /*
