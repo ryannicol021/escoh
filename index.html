@@ -322,27 +322,6 @@
 
         <div class="field">
 
-          <label for="EC-Name">
-            Eagle Challenger's full name
-            <span class="required">*</span>
-          </label>
-
-          <p class="help">
-            This person reads the Eagle Challenge and declares
-            the candidate to be an Eagle Scout. It should be an adult leader in the troop, if available.
-          </p>
-
-          <input
-            id="EC-Name"
-            name="EC-Name"
-            type="text"
-            required
-          >
-
-        </div>
-
-        <div class="field">
-
           <label for="EC-Title">
             Eagle Challenger's title
             <span class="required">*</span>
@@ -355,6 +334,27 @@
           <input
             id="EC-Title"
             name="EC-Title"
+            type="text"
+            required
+          >
+
+        </div>
+
+        <div class="field">
+
+          <label for="EC-Name">
+            Eagle Challenger's full name
+            <span class="required">*</span>
+          </label>
+
+          <p class="help">
+            The first and last name of the person who reads the Eagle Challenge and declares
+            the candidate to be an Eagle Scout. It should be an adult leader in the troop, if available.
+          </p>
+
+          <input
+            id="EC-Name"
+            name="EC-Name"
             type="text"
             required
           >
@@ -407,7 +407,7 @@
 
         </div>
 
-      </section>
+            </section>
 
 
       <!-- 9 -->
@@ -415,6 +415,73 @@
 
         <div class="section-heading">
           <span class="section-number">9</span>
+
+          <div>
+            <h2>Grandparent Attendance</h2>
+          </div>
+        </div>
+
+        <div class="field">
+
+          <label>
+            How many grandparents will be attending the
+            Eagle Court of Honor?
+            <span class="required">*</span>
+          </label>
+
+          <p class="help">
+            Select the option that best describes the grandparents
+            who will be attending the ceremony.
+          </p>
+
+          <label class="checkbox-label">
+            <input
+              type="radio"
+              name="GP-Attendance"
+              value="none"
+              required
+            >
+            No grandparents
+          </label>
+
+          <label class="checkbox-label">
+            <input
+              type="radio"
+              name="GP-Attendance"
+              value="grandfather"
+            >
+            One grandparent (grandfather)
+          </label>
+
+          <label class="checkbox-label">
+            <input
+              type="radio"
+              name="GP-Attendance"
+              value="grandmother"
+            >
+            One grandparent (grandmother)
+          </label>
+
+          <label class="checkbox-label">
+            <input
+              type="radio"
+              name="GP-Attendance"
+              value="multiple"
+            >
+            Multiple grandparents
+          </label>
+
+        </div>
+
+      </section>
+
+
+      <!-- 10 -->
+      <section class="form-section">
+
+        <div class="section-heading">
+
+          <span class="section-number">10</span>
 
           <div>
             <h2>Eagle Project</h2>
@@ -569,11 +636,11 @@
       </section>
 
 
-      <!-- 10 -->
+      <!-- 11 -->
       <section class="form-section">
 
         <div class="section-heading">
-          <span class="section-number">10</span>
+          <span class="section-number">11</span>
 
           <div>
             <h2>Scoutmaster's Minute</h2>
@@ -631,11 +698,11 @@
       </section>
 
 
-      <!-- 11 -->
+      <!-- 12 -->
       <section class="form-section">
 
         <div class="section-heading">
-          <span class="section-number">11</span>
+          <span class="section-number">12</span>
 
           <div>
             <h2>Troop History</h2>
