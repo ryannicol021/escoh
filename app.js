@@ -1006,17 +1006,16 @@ async function generateDocx(templateBuffer, data) {
      */
 
     if (
-      data["GP-Attendance"] === "none"
-    ) {
+  data["GP-Attendance"] === "none"
+) {
 
-      xml =
-        xml.replace(
-          /<w:p\b[^>]*>[\s\S]*?\[GrandparentSection\][\s\S]*?<\/w:p>/g,
-          ""
-        );
+  xml =
+    xml.replace(
+      /<w:p\b[^>]*>(?:(?!<w:p\b)[\s\S])*?\[GrandparentSection\](?:(?!<\/w:p>)[\s\S])*?<\/w:p>/g,
+      ""
+    );
 
-    }
-
+}
 
     /*
      * Find each <w:t>...</w:t> text node.
