@@ -6,18 +6,18 @@ Everything happens in the user's browser.
 
 Required files:
 
-  data/base-dignitaries.csv
-  data/national-correspondence.csv
-  data/local-officials.csv
+  data/base.csv
+  data/national.csv
+  data/local.csv
 
 CSV structures:
 
-base-dignitaries.csv
-national-correspondence.csv
+base.csv
 
   organization,title,name,contact,term_end
 
-local-officials.csv
+national.csv
+local.csv
 
   organization,title,name,contact,term_end,towns
 
@@ -40,13 +40,13 @@ Data files
 */
 
 const BASE_CSV_URL =
-  "data/base-dignitaries.csv";
+  "data/base.csv";
 
 const NATIONAL_CSV_URL =
-  "data/national-correspondence.csv";
+  "data/national.csv";
 
 const LOCAL_CSV_URL =
-  "data/local-officials.csv";
+  "data/local.csv";
 
 
 /*
@@ -635,7 +635,57 @@ function officialAppliesToLocation(
 
 
   if (
+    function correspondenceAppliesToLocation(
+  official,
+  location
+) {
+
+  const towns =
+    String(
+      official.towns || ""
+    )
+    .split(";")
+    .map(
+      town =>
+        town.trim()
+    )
+    .filter(
+      Boolean
+    );
+
+
+  /*
+  Blank towns means the official
+  applies to every location.
+  */
+
+  if (
     towns.length === 0
+  ) {
+
+    return true;
+
+  }
+
+
+  /*
+  ALL also means every location.
+  */
+
+  if (
+    towns.includes("ALL")
+  ) {
+
+    return true;
+
+  }
+
+
+  return towns.includes(
+    location
+  );
+
+}
   ) {
 
     return false;
@@ -877,10 +927,15 @@ function handleGenerate(
   National correspondence.
   */
 
-  const correspondence =
-    nationalCorrespondence.filter(
-      isOfficialCurrent
-    );
+const correspondence =
+  nationalCorrespondence.filter(
+    official =>
+      isOfficialCurrent(official) &&
+      correspondenceAppliesToLocation(
+        official,
+        location
+      )
+  );
 
 
   renderResults({
