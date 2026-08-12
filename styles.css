@@ -811,3 +811,76 @@ textarea {
   }
 
 }
+
+/* =========================================================
+   DIGNITARY RESULTS
+   ========================================================= */
+
+.dignitary-results {
+  text-align: left;
+}
+
+.dignitary-group {
+  text-align: left;
+}
+
+.dignitary-list {
+  text-align: left;
+}
+
+.dignitary-item {
+  text-align: left;
+  margin-bottom: 1em;
+  page-break-inside: avoid;
+}
+
+.dignitary-organization {
+  font-weight: bold;
+  text-align: left;
+}
+
+.dignitary-title {
+  font-weight: bold;
+  text-align: left;
+}
+
+.dignitary-name {
+  font-weight: normal;
+  text-align: left;
+}
+
+.dignitary-contact {
+  font-weight: normal;
+  text-align: left;
+}
+
+
+/* Keep the individual lines tight */
+
+.dignitary-organization,
+.dignitary-title,
+.dignitary-name,
+.dignitary-contact {
+  margin: 0;
+  padding: 0;
+}
+
+
+/* =========================================================
+   PRINT
+   ========================================================= */
+
+@media print {
+
+  .dignitary-results,
+  .dignitary-group,
+  .dignitary-list,
+  .dignitary-item,
+  .dignitary-organization,
+  .dignitary-title,
+  .dignitary-name,
+  .dignitary-contact {
+    text-align: left;
+  }
+
+}
