@@ -611,7 +611,7 @@ function renderLocalOfficials(
 
 
 /*
-Determine whether an official applies
+Determine whether a local official applies
 to the selected location.
 */
 
@@ -635,7 +635,39 @@ function officialAppliesToLocation(
 
 
   if (
-    function correspondenceAppliesToLocation(
+    towns.length === 0
+  ) {
+
+    return false;
+
+  }
+
+
+  if (
+    towns.includes(
+      "ALL"
+    )
+  ) {
+
+    return true;
+
+  }
+
+
+  return towns.includes(
+    location
+  );
+
+}
+
+
+/*
+Determine whether a national
+correspondence official applies
+to the selected location.
+*/
+
+function correspondenceAppliesToLocation(
   official,
   location
 ) {
@@ -671,27 +703,6 @@ function officialAppliesToLocation(
   /*
   ALL also means every location.
   */
-
-  if (
-    towns.includes("ALL")
-  ) {
-
-    return true;
-
-  }
-
-
-  return towns.includes(
-    location
-  );
-
-}
-  ) {
-
-    return false;
-
-  }
-
 
   if (
     towns.includes(
