@@ -1,33 +1,33 @@
 organization,title,name,contact,term_end,towns,next_update,district
-New York,State Senator,Steve Rhoads,rhoads@nysenate.gov,2026-12-31,,2028,5
+New York,State Senator,Steve Rhoads,rhoads@nysenate.gov,2026-12-31,ALL,2028,5
 New York,State Senator,Siela Bynoe,bynoe@nysenate.gov,2026-12-31,Freeport,2028,6
 New York,State Senator,Alexis Weik,weik@nysenate.gov,2026-12-31,Masssapequa;Massapequa Park;Amityville;Copiague;Lindenhurst;Farmingdale,2028,8
 New York,State Senator,Monica Martinez,martinez@nysenate.gov,2026-12-31,Amityville;Copiague,2028,4
-New York,State Assemblymember,Dave McDonough,mcdonoughd@nyassembly.gov,2026-12-31,,2028,14
+New York,State Assemblymember,Dave McDonough,mcdonoughd@nyassembly.gov,2026-12-31,ALL,2028,14
 New York,State Assemblymember,Judy Griffin,griffinj@nyassembly.gov,2026-12-31,Freeport,2028,21
 New York,State Assemblymember,Noah Burroughs,burroughsn@nyassembly.gov,2026-12-31,Freeport,2028,18
 New York,State Assemblymember,John Mikulin,mikulinj@nyassembly.gov,2026-12-31,Massapequa;Farmingdale,2028,17
 New York,State Assemblymember,Jake Blumencranz,blumencranzj@nyassembly.gov,2026-12-31,Farmingdale,2028,15
 New York,State Assemblymember,Michael Durso,dursom@nyassembly.gov,2026-12-31,Massapequa;Massapequa Park;Lindenhurst,2028,9
 New York,State Assemblymember,Kwani O'Pharrow,opharrowk@nyassembly.gov,2026-12-31,Amityville;Copiague;Lindenhurst,2028,11
-Nassau County,Executive,Bruce Blakeman,bblakeman@nassaucountyny.gov,2028-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford;Massapequa;Massapequa Park;Farmingdale,2032,
-Nassau County,District Attorney,Anne Donnelly,anne.donnelly@nassauda.org,2029-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford;Massapequa;Massapequa Park;Farmingdale,2033,
-Nassau County,Comptroller,Elaine Phillips,ephillips@nassaucountyny.gov,2028-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford;Massapequa;Massapequa Park;Farmingdale,2032,
-Nassau County,Clerk,Maureen O'Connell,moconnell@nassaucountyny.gov,2029-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford;Massapequa;Massapequa Park;Farmingdale,2033,
+Nassau County,Executive,Bruce Blakeman,bblakeman@nassaucountyny.gov,2028-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford;Massapequa;Massapequa Park;Farmingdale,2032,0
+Nassau County,District Attorney,Anne Donnelly,anne.donnelly@nassauda.org,2029-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford;Massapequa;Massapequa Park;Farmingdale,2033,0
+Nassau County,Comptroller,Elaine Phillips,ephillips@nassaucountyny.gov,2028-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford;Massapequa;Massapequa Park;Farmingdale,2032,0
+Nassau County,Clerk,Maureen O'Connell,moconnell@nassaucountyny.gov,2029-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford;Massapequa;Massapequa Park;Farmingdale,2033,0
 Nassau County,Legislator,Debra Mule,dmule@nassaucountyny.gov,2026-12-31,Freeport,2028,6
 Nassau County,Legislator,Michael Giangregorio,mgiangregorio@nassaucountyny.gov,2026-12-31,Merrick;Bellmore,2028,12
-Nassau County,Legislator,Kayla Knight,kknight@nassaucountyny.gov,2026-12-31,,2028,15
+Nassau County,Legislator,Kayla Knight,kknight@nassaucountyny.gov,2026-12-31,ALL,2028,15
 Nassau County,Legislator,James Kennedy,jkennedy@nassaucountyny.gov,2026-12-31,Massapequa;Massapequa Park,2028,19
-Suffolk County,Executive,Ed Romaine,county.executive@suffolkcountyny.gov,2027-12-31,Amityville;Copiague;Lindenhurst,2030,
-Suffolk County,District Attorney,Ray Tierney,infoda@suffolkcountyny.gov,2029-12-31,Amityville;Copiague;Lindenhurst,2033,
-Suffolk County,Comptroller,John Kennedy,comptroller@suffolkcountyny.gov,2028-12-31,Amityville;Copiague;Lindenhurst,2032,
-Suffolk County,Clerk,Vincent Puleo,vincent.puleo@suffolkcountyny.gov,2029-12-31,Amityville;Copiague;Lindenhurst,2033,
+Suffolk County,Executive,Ed Romaine,county.executive@suffolkcountyny.gov,2027-12-31,Amityville;Copiague;Lindenhurst,2030,0
+Suffolk County,District Attorney,Ray Tierney,infoda@suffolkcountyny.gov,2029-12-31,Amityville;Copiague;Lindenhurst,2033,0
+Suffolk County,Comptroller,John Kennedy,comptroller@suffolkcountyny.gov,2028-12-31,Amityville;Copiague;Lindenhurst,2032,0
+Suffolk County,Clerk,Vincent Puleo,vincent.puleo@suffolkcountyny.gov,2029-12-31,Amityville;Copiague;Lindenhurst,2033,0
 Suffolk County,Legislator,Jason Richberg,jason.richberg@suffolkcountyny.gov,2028-12-31,Amityville;Copiague,2032,15
 Suffolk County,Legislator,RJ Renna,rj.renna@suffolkcountyny.gov,2028-12-31,Copiague;Lindenhurst,2032,14
-Town of Hempstead,Supervisor,John Ferretti,jferretti@hempsteadny.gov,2026-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford,2028,
-Town of Hempstead,Clerk,Kate Murray,kmurray@hempsteadny.gov,2026-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford,2028,
-Town of Hempstead,Councilmember,Chris Schneider,cschneider@hempsteadny.gov,2027-12-31,,2030,
-Town of Oyster Bay,Supervisor,Joe Saladino,josephsaladino@oysterbay-ny.gov,2026-12-31,Massapequa;Massapequa Park;Farmingdale,2028,
-Town of Oyster Bay,Clerk,Rich LaMarca,rlamarca@oysterbay-ny.gov,2026-12-31,Massapequa;Massapequa Park;Farmingdale,2028,
-Town of Babylon,Supervisor,Rich Schaffer,rschaffer@townofbabylonny.gov,2026-12-31,Amityville;Copiague;Lindenhurst,2028,
-Town of Babylon,Clerk,Janina Martinez,jmartinez@townofbabylonny.gov,2026-12-31,Amityville;Copiague;Lindenhurst,2028,
+Town of Hempstead,Supervisor,John Ferretti,jferretti@hempsteadny.gov,2026-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford,2028,0
+Town of Hempstead,Clerk,Kate Murray,kmurray@hempsteadny.gov,2026-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford,2028,0
+Town of Hempstead,Councilmember,Chris Schneider,cschneider@hempsteadny.gov,2027-12-31,,2030,5
+Town of Oyster Bay,Supervisor,Joe Saladino,josephsaladino@oysterbay-ny.gov,2026-12-31,Massapequa;Massapequa Park;Farmingdale,2028,0
+Town of Oyster Bay,Clerk,Rich LaMarca,rlamarca@oysterbay-ny.gov,2026-12-31,Massapequa;Massapequa Park;Farmingdale,2028,0
+Town of Babylon,Supervisor,Rich Schaffer,rschaffer@townofbabylonny.gov,2026-12-31,Amityville;Copiague;Lindenhurst,2028,0
+Town of Babylon,Clerk,Janina Martinez,jmartinez@townofbabylonny.gov,2026-12-31,Amityville;Copiague;Lindenhurst,2028,0
