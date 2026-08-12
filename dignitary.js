@@ -100,11 +100,6 @@ async function initialize() {
       "location"
     );
 
-  const streetAddressInput =
-    document.getElementById(
-      "street-address"
-    );
-
   const localSection =
     document.getElementById(
       "local-section"
@@ -158,10 +153,6 @@ async function initialize() {
 
   if (!locationInput) {
     missingElements.push("location");
-  }
-
-  if (!streetAddressInput) {
-    missingElements.push("street-address");
   }
 
   if (!localSection) {
@@ -290,7 +281,6 @@ async function initialize() {
         event,
         form,
         locationInput,
-        streetAddressInput,
         localOfficialsContainer,
         resultsSection,
         resultsContent,
@@ -1171,7 +1161,6 @@ function handleGenerate(
   event,
   form,
   locationInput,
-  streetAddressInput,
   localOfficialsContainer,
   resultsSection,
   resultsContent,
@@ -1203,11 +1192,6 @@ function handleGenerate(
 
   const location =
     locationInput.value.trim();
-
-
-  const streetAddress =
-    streetAddressInput.value.trim();
-
 
   /*
   Base dignitaries.
@@ -1267,7 +1251,6 @@ function handleGenerate(
 
   renderResults(
     {
-      streetAddress,
       location,
       invitations,
       correspondence
@@ -1413,7 +1396,6 @@ function renderResults(
   */
 
   if (
-    data.streetAddress ||
     data.location
   ) {
 
@@ -1427,18 +1409,6 @@ function renderResults(
 
 
     const addressParts = [];
-
-
-    if (
-      data.streetAddress
-    ) {
-
-      addressParts.push(
-        data.streetAddress
-      );
-
-    }
-
 
     if (
       data.location
