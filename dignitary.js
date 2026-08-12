@@ -110,6 +110,16 @@ async function initialize() {
       "local-officials"
     );
 
+  const nationalSection =
+  document.getElementById(
+    "national-section"
+  );
+
+const nationalOfficialsContainer =
+  document.getElementById(
+    "national-officials"
+  );
+
   const resultsSection =
     document.getElementById(
       "results-section"
