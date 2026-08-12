@@ -17,6 +17,9 @@ base.csv
   organization,title,name,contact,term_end
 
 national.csv
+
+  organization,title,name,contact,term_end,towns
+
 local.csv
 
   organization,title,name,contact,term_end,towns
@@ -24,7 +27,8 @@ local.csv
 Rules:
 
   - Base dignitaries are always invitations.
-  - National dignitaries are always correspondence.
+  - National dignitaries are correspondence.
+  - National dignitaries with blank towns apply to everyone.
   - Local officials are invitations.
   - Local officials are filtered by the selected location.
   - Local officials are selected by default.
@@ -35,9 +39,9 @@ Rules:
 */
 
 
-/*
-Data files
-*/
+/* =========================================================
+   Data files
+   ========================================================= */
 
 const BASE_CSV_URL =
   "data/base.csv";
@@ -49,69 +53,9 @@ const LOCAL_CSV_URL =
   "data/local.csv";
 
 
-/*
-DOM elements
-*/
-
-const form =
-  document.getElementById(
-    "dignitary-form"
-  );
-
-const locationInput =
-  document.getElementById(
-    "location"
-  );
-
-const streetAddressInput =
-  document.getElementById(
-    "street-address"
-  );
-
-const localSection =
-  document.getElementById(
-    "local-section"
-  );
-
-const localOfficialsContainer =
-  document.getElementById(
-    "local-officials"
-  );
-
-const resultsSection =
-  document.getElementById(
-    "results-section"
-  );
-
-const resultsContent =
-  document.getElementById(
-    "results-content"
-  );
-
-const errorMessage =
-  document.getElementById(
-    "error-message"
-  );
-
-const printButton =
-  document.getElementById(
-    "print-button"
-  );
-
-const editButton =
-  document.getElementById(
-    "edit-button"
-  );
-
-const startOverButton =
-  document.getElementById(
-    "start-over"
-  );
-
-
-/*
-Application state
-*/
+/* =========================================================
+   Application state
+   ========================================================= */
 
 let baseDignitaries = [];
 
@@ -120,9 +64,9 @@ let nationalCorrespondence = [];
 let localOfficials = [];
 
 
-/*
-Initialization
-*/
+/* =========================================================
+   DOM initialization
+   ========================================================= */
 
 document.addEventListener(
   "DOMContentLoaded",
@@ -131,6 +75,133 @@ document.addEventListener(
 
 
 async function initialize() {
+
+  /*
+  Get DOM elements after the page has loaded.
+  */
+
+  const form =
+    document.getElementById(
+      "dignitary-form"
+    );
+
+  const locationInput =
+    document.getElementById(
+      "location"
+    );
+
+  const streetAddressInput =
+    document.getElementById(
+      "street-address"
+    );
+
+  const localSection =
+    document.getElementById(
+      "local-section"
+    );
+
+  const localOfficialsContainer =
+    document.getElementById(
+      "local-officials"
+    );
+
+  const resultsSection =
+    document.getElementById(
+      "results-section"
+    );
+
+  const resultsContent =
+    document.getElementById(
+      "results-content"
+    );
+
+  const errorMessage =
+    document.getElementById(
+      "error-message"
+    );
+
+  const printButton =
+    document.getElementById(
+      "print-button"
+    );
+
+  const editButton =
+    document.getElementById(
+      "edit-button"
+    );
+
+  const startOverButton =
+    document.getElementById(
+      "start-over"
+    );
+
+
+  /*
+  Make sure the expected HTML elements exist.
+  */
+
+  const missingElements = [];
+
+  if (!form) {
+    missingElements.push("dignitary-form");
+  }
+
+  if (!locationInput) {
+    missingElements.push("location");
+  }
+
+  if (!streetAddressInput) {
+    missingElements.push("street-address");
+  }
+
+  if (!localSection) {
+    missingElements.push("local-section");
+  }
+
+  if (!localOfficialsContainer) {
+    missingElements.push("local-officials");
+  }
+
+  if (!resultsSection) {
+    missingElements.push("results-section");
+  }
+
+  if (!resultsContent) {
+    missingElements.push("results-content");
+  }
+
+  if (!errorMessage) {
+    missingElements.push("error-message");
+  }
+
+  if (!printButton) {
+    missingElements.push("print-button");
+  }
+
+  if (!editButton) {
+    missingElements.push("edit-button");
+  }
+
+  if (!startOverButton) {
+    missingElements.push("start-over");
+  }
+
+
+  if (missingElements.length > 0) {
+
+    console.error(
+      "Missing HTML elements:",
+      missingElements
+    );
+
+    return;
+
+  }
+
+
+  /*
+  Load the CSV files.
+  */
 
   try {
 
@@ -144,61 +215,24 @@ async function initialize() {
     );
 
     showError(
+      errorMessage,
       "The dignitary information could not be loaded. " +
-      "Make sure the three CSV files are present in the " +
-      "data folder."
+      "Check that base.csv, national.csv, and local.csv " +
+      "are present in the data folder."
     );
 
     return;
+
   }
 
-}
 
+  /*
+  Show what was actually loaded.
+  */
 
-/*
-Load all CSV files
-*/
-
-async function loadDignitaryData() {
-
-  const [
-    baseCsv,
-    nationalCsv,
-    localCsv
-  ] = await Promise.all([
-
-    fetchCsv(
-      BASE_CSV_URL
-    ),
-
-    fetchCsv(
-      NATIONAL_CSV_URL
-    ),
-
-    fetchCsv(
-      LOCAL_CSV_URL
-    )
-
-  ]);
-
-
-  baseDignitaries =
-    parseCsv(
-      baseCsv
-    );
-
-
-  nationalCorrespondence =
-    parseCsv(
-      nationalCsv
-    );
-
-
-  localOfficials =
-    parseCsv(
-      localCsv
-    );
-
+  console.log(
+    "Dignitary data loaded successfully."
+  );
 
   console.log(
     "Base dignitaries:",
@@ -215,12 +249,176 @@ async function loadDignitaryData() {
     localOfficials
   );
 
+
+  /*
+  Location change.
+  */
+
+  locationInput.addEventListener(
+    "change",
+    () => {
+
+      handleLocationChange(
+        locationInput,
+        localSection,
+        localOfficialsContainer
+      );
+
+    }
+  );
+
+
+  /*
+  Form submission.
+  */
+
+  form.addEventListener(
+    "submit",
+    event => {
+
+      handleGenerate(
+        event,
+        form,
+        locationInput,
+        streetAddressInput,
+        localOfficialsContainer,
+        resultsSection,
+        resultsContent,
+        errorMessage
+      );
+
+    }
+  );
+
+
+  /*
+  Print.
+  */
+
+  printButton.addEventListener(
+    "click",
+    () => {
+
+      window.print();
+
+    }
+  );
+
+
+  /*
+  Edit.
+  */
+
+  editButton.addEventListener(
+    "click",
+    () => {
+
+      resultsSection.classList.add(
+        "hidden"
+      );
+
+      form.classList.remove(
+        "hidden"
+      );
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+
+    }
+  );
+
+
+  /*
+  Start over.
+  */
+
+  startOverButton.addEventListener(
+    "click",
+    () => {
+
+      handleStartOver(
+        form,
+        localSection,
+        localOfficialsContainer,
+        resultsContent,
+        resultsSection,
+        errorMessage
+      );
+
+    }
+  );
+
 }
 
 
-/*
-Fetch a CSV file
-*/
+/* =========================================================
+   Load all CSV files
+   ========================================================= */
+
+async function loadDignitaryData() {
+
+  const results =
+    await Promise.all([
+      fetchCsv(BASE_CSV_URL),
+      fetchCsv(NATIONAL_CSV_URL),
+      fetchCsv(LOCAL_CSV_URL)
+    ]);
+
+
+  baseDignitaries =
+    parseCsv(
+      results[0]
+    );
+
+
+  nationalCorrespondence =
+    parseCsv(
+      results[1]
+    );
+
+
+  localOfficials =
+    parseCsv(
+      results[2]
+    );
+
+
+  /*
+  Warn if files are unexpectedly empty.
+  */
+
+  if (baseDignitaries.length === 0) {
+
+    console.warn(
+      "base.csv loaded but contains no records."
+    );
+
+  }
+
+  if (nationalCorrespondence.length === 0) {
+
+    console.warn(
+      "national.csv loaded but contains no records."
+    );
+
+  }
+
+  if (localOfficials.length === 0) {
+
+    console.warn(
+      "local.csv loaded but contains no records."
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   Fetch CSV
+   ========================================================= */
 
 async function fetchCsv(
   url
@@ -238,8 +436,7 @@ async function fetchCsv(
   if (!response.ok) {
 
     throw new Error(
-      `Could not load ${url}. ` +
-      `HTTP ${response.status}.`
+      `Could not load ${url}. HTTP ${response.status}.`
     );
 
   }
@@ -250,17 +447,9 @@ async function fetchCsv(
 }
 
 
-/*
-Simple CSV parser.
-
-Supports:
-
-  - comma-separated fields
-  - quoted fields
-  - commas inside quoted fields
-  - escaped quotes
-  - Windows or Unix line endings
-*/
+/* =========================================================
+   CSV parser
+   ========================================================= */
 
 function parseCsv(
   text
@@ -284,10 +473,13 @@ function parseCsv(
     const character =
       text[i];
 
-
     const nextCharacter =
       text[i + 1];
 
+
+    /*
+    Quoted field.
+    */
 
     if (
       character === '"'
@@ -310,8 +502,13 @@ function parseCsv(
       }
 
       continue;
+
     }
 
+
+    /*
+    Comma ends a field.
+    */
 
     if (
       character === "," &&
@@ -325,8 +522,13 @@ function parseCsv(
       field = "";
 
       continue;
+
     }
 
+
+    /*
+    Newline ends a row.
+    */
 
     if (
       (
@@ -335,6 +537,10 @@ function parseCsv(
       ) &&
       !insideQuotes
     ) {
+
+      /*
+      Handle Windows CRLF.
+      */
 
       if (
         character === "\r" &&
@@ -353,6 +559,10 @@ function parseCsv(
       field = "";
 
 
+      /*
+      Ignore completely blank rows.
+      */
+
       if (
         row.some(
           value =>
@@ -370,6 +580,7 @@ function parseCsv(
       row = [];
 
       continue;
+
     }
 
 
@@ -380,12 +591,19 @@ function parseCsv(
 
 
   /*
-  Add final field / row.
+  Add final field/row.
   */
 
-  row.push(
-    field
-  );
+  if (
+    field !== "" ||
+    row.length > 0
+  ) {
+
+    row.push(
+      field
+    );
+
+  }
 
 
   if (
@@ -402,6 +620,10 @@ function parseCsv(
   }
 
 
+  /*
+  No rows.
+  */
+
   if (
     rows.length === 0
   ) {
@@ -410,6 +632,10 @@ function parseCsv(
 
   }
 
+
+  /*
+  First row contains headers.
+  */
 
   const headers =
     rows[0].map(
@@ -423,12 +649,17 @@ function parseCsv(
     );
 
 
+  /*
+  Convert each remaining row into an object.
+  */
+
   return rows
     .slice(1)
     .map(
       values => {
 
         const record = {};
+
 
         headers.forEach(
           (
@@ -438,8 +669,7 @@ function parseCsv(
 
             record[header] =
               String(
-                values[index] ??
-                ""
+                values[index] ?? ""
               ).trim();
 
           }
@@ -454,20 +684,18 @@ function parseCsv(
 }
 
 
-/*
-Location change
-*/
+/* =========================================================
+   Location handling
+   ========================================================= */
 
-locationInput.addEventListener(
-  "change",
-  handleLocationChange
-);
-
-
-function handleLocationChange() {
+function handleLocationChange(
+  locationInput,
+  localSection,
+  localOfficialsContainer
+) {
 
   const location =
-    locationInput.value;
+    locationInput.value.trim();
 
 
   if (!location) {
@@ -485,18 +713,22 @@ function handleLocationChange() {
 
 
   renderLocalOfficials(
-    location
+    location,
+    localSection,
+    localOfficialsContainer
   );
 
 }
 
 
-/*
-Render applicable local officials
-*/
+/* =========================================================
+   Render local officials
+   ========================================================= */
 
 function renderLocalOfficials(
-  location
+  location,
+  localSection,
+  localOfficialsContainer
 ) {
 
   localOfficialsContainer.innerHTML =
@@ -531,9 +763,11 @@ function renderLocalOfficials(
     message.textContent =
       "No local officials are currently listed for this location.";
 
+
     localOfficialsContainer.appendChild(
       message
     );
+
 
     localSection.classList.remove(
       "hidden"
@@ -545,10 +779,7 @@ function renderLocalOfficials(
 
 
   applicableOfficials.forEach(
-    (
-      official,
-      index
-    ) => {
+    official => {
 
       const label =
         document.createElement(
@@ -569,6 +800,12 @@ function renderLocalOfficials(
 
       checkbox.checked =
         true;
+
+
+      /*
+      Store the index in the original
+      localOfficials array.
+      */
 
       checkbox.dataset.localIndex =
         String(
@@ -610,10 +847,9 @@ function renderLocalOfficials(
 }
 
 
-/*
-Determine whether a local official applies
-to the selected location.
-*/
+/* =========================================================
+   Local geographic filtering
+   ========================================================= */
 
 function officialAppliesToLocation(
   official,
@@ -621,18 +857,18 @@ function officialAppliesToLocation(
 ) {
 
   const towns =
-    String(
-      official.towns || ""
-    )
-    .split(";")
-    .map(
-      town =>
-        town.trim()
-    )
-    .filter(
-      Boolean
+    getOfficialTowns(
+      official
     );
 
+
+  /*
+  A local official with no towns does NOT
+  automatically apply everywhere.
+
+  Local officials need an explicit town
+  or ALL.
+  */
 
   if (
     towns.length === 0
@@ -644,9 +880,7 @@ function officialAppliesToLocation(
 
 
   if (
-    towns.includes(
-      "ALL"
-    )
+    towns.includes("ALL")
   ) {
 
     return true;
@@ -655,17 +889,15 @@ function officialAppliesToLocation(
 
 
   return towns.includes(
-    location
+    location.trim()
   );
 
 }
 
 
-/*
-Determine whether a national
-correspondence official applies
-to the selected location.
-*/
+/* =========================================================
+   National geographic filtering
+   ========================================================= */
 
 function correspondenceAppliesToLocation(
   official,
@@ -673,22 +905,17 @@ function correspondenceAppliesToLocation(
 ) {
 
   const towns =
-    String(
-      official.towns || ""
-    )
-    .split(";")
-    .map(
-      town =>
-        town.trim()
-    )
-    .filter(
-      Boolean
+    getOfficialTowns(
+      official
     );
 
 
   /*
-  Blank towns means the official
-  applies to every location.
+  IMPORTANT:
+
+  For national.csv, a blank towns field
+  means the official applies to EVERY
+  location.
   */
 
   if (
@@ -705,9 +932,7 @@ function correspondenceAppliesToLocation(
   */
 
   if (
-    towns.includes(
-      "ALL"
-    )
+    towns.includes("ALL")
   ) {
 
     return true;
@@ -715,16 +940,44 @@ function correspondenceAppliesToLocation(
   }
 
 
+  /*
+  Otherwise the selected location must
+  appear in the towns list.
+  */
+
   return towns.includes(
-    location
+    location.trim()
   );
 
 }
 
 
-/*
-Determine whether an official is current.
-*/
+/* =========================================================
+   Get towns from an official
+   ========================================================= */
+
+function getOfficialTowns(
+  official
+) {
+
+  return String(
+    official.towns || ""
+  )
+    .split(";")
+    .map(
+      town =>
+        town.trim()
+    )
+    .filter(
+      Boolean
+    );
+
+}
+
+
+/* =========================================================
+   Determine whether official is current
+   ========================================================= */
 
 function isOfficialCurrent(
   official
@@ -747,11 +1000,6 @@ function isOfficialCurrent(
   }
 
 
-  /*
-  Parse the date as a local calendar date
-  rather than as a UTC timestamp.
-  */
-
   const parts =
     termEnd.split("-");
 
@@ -765,11 +1013,6 @@ function isOfficialCurrent(
       termEnd,
       official
     );
-
-    /*
-    An invalid nonblank date is treated as
-    expired rather than indefinite.
-    */
 
     return false;
 
@@ -792,6 +1035,23 @@ function isOfficialCurrent(
     );
 
 
+  if (
+    !Number.isInteger(year) ||
+    !Number.isInteger(month) ||
+    !Number.isInteger(day)
+  ) {
+
+    console.warn(
+      "Invalid term_end:",
+      termEnd,
+      official
+    );
+
+    return false;
+
+  }
+
+
   const expirationDate =
     new Date(
       year,
@@ -801,8 +1061,29 @@ function isOfficialCurrent(
 
 
   /*
-  The person remains active through the
-  listed term-end date.
+  Prevent JavaScript from accepting
+  impossible dates such as February 31.
+  */
+
+  if (
+    expirationDate.getFullYear() !== year ||
+    expirationDate.getMonth() !== month - 1 ||
+    expirationDate.getDate() !== day
+  ) {
+
+    console.warn(
+      "Invalid term_end:",
+      termEnd,
+      official
+    );
+
+    return false;
+
+  }
+
+
+  /*
+  Compare calendar dates at midnight.
   */
 
   const today =
@@ -821,9 +1102,9 @@ function isOfficialCurrent(
 }
 
 
-/*
-Build a readable official label.
-*/
+/* =========================================================
+   Build readable official label
+   ========================================================= */
 
 function buildOfficialLabel(
   official
@@ -872,22 +1153,27 @@ function buildOfficialLabel(
 }
 
 
-/*
-Generate results
-*/
-
-form.addEventListener(
-  "submit",
-  handleGenerate
-);
-
+/* =========================================================
+   Generate results
+   ========================================================= */
 
 function handleGenerate(
-  event
+  event,
+  form,
+  locationInput,
+  streetAddressInput,
+  localOfficialsContainer,
+  resultsSection,
+  resultsContent,
+  errorMessage
 ) {
 
   event.preventDefault();
 
+
+  /*
+  Validate form.
+  */
 
   if (
     !form.checkValidity()
@@ -900,11 +1186,13 @@ function handleGenerate(
   }
 
 
-  hideError();
+  hideError(
+    errorMessage
+  );
 
 
   const location =
-    locationInput.value;
+    locationInput.value.trim();
 
 
   const streetAddress =
@@ -913,20 +1201,28 @@ function handleGenerate(
 
   /*
   Base dignitaries.
+
+  Every current base dignitary is
+  included as an invitation.
   */
 
   const invitations =
     baseDignitaries.filter(
-      isOfficialCurrent
+      official =>
+        isOfficialCurrent(
+          official
+        )
     );
 
 
   /*
-  Selected local officials.
+  Add selected local officials.
   */
 
   const selectedLocalOfficials =
-    getSelectedLocalOfficials();
+    getSelectedLocalOfficials(
+      localOfficialsContainer
+    );
 
 
   invitations.push(
@@ -936,26 +1232,43 @@ function handleGenerate(
 
   /*
   National correspondence.
+
+  Blank towns = everyone.
+  ALL = everyone.
+  Otherwise town must match.
   */
 
-const correspondence =
-  nationalCorrespondence.filter(
-    official =>
-      isOfficialCurrent(official) &&
-      correspondenceAppliesToLocation(
-        official,
-        location
-      )
+  const correspondence =
+    nationalCorrespondence.filter(
+      official =>
+        isOfficialCurrent(
+          official
+        ) &&
+        correspondenceAppliesToLocation(
+          official,
+          location
+        )
+    );
+
+
+  /*
+  Render.
+  */
+
+  renderResults(
+    {
+      streetAddress,
+      location,
+      invitations,
+      correspondence
+    },
+    resultsContent
   );
 
 
-  renderResults({
-    streetAddress,
-    location,
-    invitations,
-    correspondence
-  });
-
+  /*
+  Switch from form to results.
+  */
 
   form.classList.add(
     "hidden"
@@ -974,12 +1287,13 @@ const correspondence =
 }
 
 
-/*
-Get the local officials currently
-checked by the user.
-*/
+/* =========================================================
+   Get selected local officials
+   ========================================================= */
 
-function getSelectedLocalOfficials() {
+function getSelectedLocalOfficials(
+  localOfficialsContainer
+) {
 
   const checkboxes =
     localOfficialsContainer.querySelectorAll(
@@ -1034,12 +1348,13 @@ function getSelectedLocalOfficials() {
 }
 
 
-/*
-Render the final list.
-*/
+/* =========================================================
+   Render final results
+   ========================================================= */
 
 function renderResults(
-  data
+  data,
+  resultsContent
 ) {
 
   resultsContent.innerHTML =
@@ -1082,6 +1397,10 @@ function renderResults(
     subtitle
   );
 
+
+  /*
+  Address.
+  */
 
   if (
     data.streetAddress ||
@@ -1141,7 +1460,7 @@ function renderResults(
 
 
   /*
-  Invitation section.
+  Invitations.
   */
 
   resultsContent.appendChild(
@@ -1153,7 +1472,7 @@ function renderResults(
 
 
   /*
-  Correspondence section.
+  Correspondence.
   */
 
   resultsContent.appendChild(
@@ -1166,9 +1485,9 @@ function renderResults(
 }
 
 
-/*
-Create an invitation/correspondence group.
-*/
+/* =========================================================
+   Create results group
+   ========================================================= */
 
 function createResultsGroup(
   title,
@@ -1213,9 +1532,11 @@ function createResultsGroup(
     empty.textContent =
       "None.";
 
+
     section.appendChild(
       empty
     );
+
 
     return section;
 
@@ -1254,9 +1575,9 @@ function createResultsGroup(
 }
 
 
-/*
-Create one official's displayed result.
-*/
+/* =========================================================
+   Create one official result
+   ========================================================= */
 
 function createOfficialResult(
   official
@@ -1326,22 +1647,9 @@ function createOfficialResult(
 }
 
 
-/*
-Create the contact display/link.
-
-Rules:
-
-  email address:
-    display the email
-    link to mailto:email
-
-  http/https:
-    display "Contact Form"
-    link directly to the URL
-
-  anything else:
-    display as plain text
-*/
+/* =========================================================
+   Create contact element
+   ========================================================= */
 
 function createContactElement(
   value
@@ -1362,9 +1670,7 @@ function createContactElement(
     ).trim();
 
 
-  if (
-    !cleanValue
-  ) {
+  if (!cleanValue) {
 
     return contact;
 
@@ -1372,11 +1678,13 @@ function createContactElement(
 
 
   /*
-  Email
+  Email address.
   */
 
   if (
-    cleanValue.includes("@")
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+      cleanValue
+    )
   ) {
 
     const link =
@@ -1402,7 +1710,7 @@ function createContactElement(
 
 
   /*
-  Website / contact form
+  Website/contact form.
   */
 
   if (
@@ -1440,7 +1748,7 @@ function createContactElement(
 
 
   /*
-  Everything else is plain text.
+  Plain text.
   */
 
   contact.textContent =
@@ -1452,59 +1760,18 @@ function createContactElement(
 }
 
 
-/*
-Print button
-*/
+/* =========================================================
+   Start over
+   ========================================================= */
 
-printButton.addEventListener(
-  "click",
-  handlePrint
-);
-
-
-function handlePrint() {
-
-  window.print();
-
-}
-
-
-/*
-Edit button
-*/
-
-editButton.addEventListener(
-  "click",
-  () => {
-
-    resultsSection.classList.add(
-      "hidden"
-    );
-
-    form.classList.remove(
-      "hidden"
-    );
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
-
-  }
-);
-
-
-/*
-Start over
-*/
-
-startOverButton.addEventListener(
-  "click",
-  handleStartOver
-);
-
-
-function handleStartOver() {
+function handleStartOver(
+  form,
+  localSection,
+  localOfficialsContainer,
+  resultsContent,
+  resultsSection,
+  errorMessage
+) {
 
   form.reset();
 
@@ -1532,7 +1799,9 @@ function handleStartOver() {
   );
 
 
-  hideError();
+  hideError(
+    errorMessage
+  );
 
 
   window.scrollTo({
@@ -1543,11 +1812,12 @@ function handleStartOver() {
 }
 
 
-/*
-Error handling
-*/
+/* =========================================================
+   Error handling
+   ========================================================= */
 
 function showError(
+  errorMessage,
   message
 ) {
 
@@ -1561,7 +1831,9 @@ function showError(
 }
 
 
-function hideError() {
+function hideError(
+  errorMessage
+) {
 
   errorMessage.textContent =
     "";
@@ -1573,19 +1845,20 @@ function hideError() {
 }
 
 
-/*
-Debug information.
+/* =========================================================
+   Debug information
+   =========================================================
 
-Open the browser console and type:
+   Open the browser console and type:
 
-  EagleDignitary
+     EagleDignitary
 
-*/
+   ========================================================= */
 
 window.EagleDignitary = {
 
   version:
-    "1.0.0",
+    "2.0.0",
 
   files: {
 
@@ -1597,6 +1870,23 @@ window.EagleDignitary = {
 
     local:
       LOCAL_CSV_URL
+
+  },
+
+  getData: function () {
+
+    return {
+
+      base:
+        baseDignitaries,
+
+      national:
+        nationalCorrespondence,
+
+      local:
+        localOfficials
+
+    };
 
   }
 
