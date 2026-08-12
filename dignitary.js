@@ -1147,7 +1147,7 @@ function buildOfficialLabel(
 
 
   return parts.join(
-    " — "
+    " "
   );
 
 }
