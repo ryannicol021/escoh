@@ -27,11 +27,12 @@ local.csv
 Rules:
 
   - Base dignitaries are always invitations.
-  - National dignitaries are correspondence.
+  - National dignitaries are correspondence requests.
   - National dignitaries with blank towns apply to everyone.
-  - Local officials are invitations.
+  - Local officials are invitation requests.
   - Local officials are filtered by the selected location.
-  - Local officials are selected by default.
+  - National officials are filtered by the selected location.
+  - Local and national officials are selected by default.
   - Expired officials are excluded.
   - A blank term_end means indefinite.
   - towns may contain multiple locations separated by semicolons.
@@ -111,14 +112,14 @@ async function initialize() {
     );
 
   const nationalSection =
-  document.getElementById(
-    "national-section"
-  );
+    document.getElementById(
+      "national-section"
+    );
 
-const nationalOfficialsContainer =
-  document.getElementById(
-    "national-officials"
-  );
+  const nationalOfficialsContainer =
+    document.getElementById(
+      "national-officials"
+    );
 
   const resultsSection =
     document.getElementById(
@@ -151,54 +152,89 @@ const nationalOfficialsContainer =
     );
 
 
-  /*
-  Make sure the expected HTML elements exist.
-  */
+  /* =======================================================
+     Verify required HTML elements
+     ======================================================= */
 
   const missingElements = [];
 
+
   if (!form) {
-    missingElements.push("dignitary-form");
+    missingElements.push(
+      "dignitary-form"
+    );
   }
 
   if (!locationInput) {
-    missingElements.push("location");
+    missingElements.push(
+      "location"
+    );
   }
 
   if (!localSection) {
-    missingElements.push("local-section");
+    missingElements.push(
+      "local-section"
+    );
   }
 
   if (!localOfficialsContainer) {
-    missingElements.push("local-officials");
+    missingElements.push(
+      "local-officials"
+    );
+  }
+
+  if (!nationalSection) {
+    missingElements.push(
+      "national-section"
+    );
+  }
+
+  if (!nationalOfficialsContainer) {
+    missingElements.push(
+      "national-officials"
+    );
   }
 
   if (!resultsSection) {
-    missingElements.push("results-section");
+    missingElements.push(
+      "results-section"
+    );
   }
 
   if (!resultsContent) {
-    missingElements.push("results-content");
+    missingElements.push(
+      "results-content"
+    );
   }
 
   if (!errorMessage) {
-    missingElements.push("error-message");
+    missingElements.push(
+      "error-message"
+    );
   }
 
   if (!printButton) {
-    missingElements.push("print-button");
+    missingElements.push(
+      "print-button"
+    );
   }
 
   if (!editButton) {
-    missingElements.push("edit-button");
+    missingElements.push(
+      "edit-button"
+    );
   }
 
   if (!startOverButton) {
-    missingElements.push("start-over");
+    missingElements.push(
+      "start-over"
+    );
   }
 
 
-  if (missingElements.length > 0) {
+  if (
+    missingElements.length > 0
+  ) {
 
     console.error(
       "Missing HTML elements:",
@@ -210,9 +246,9 @@ const nationalOfficialsContainer =
   }
 
 
-  /*
-  Load the CSV files.
-  */
+  /* =======================================================
+     Load CSV data
+     ======================================================= */
 
   try {
 
@@ -237,10 +273,6 @@ const nationalOfficialsContainer =
   }
 
 
-  /*
-  Show what was actually loaded.
-  */
-
   console.log(
     "Dignitary data loaded successfully."
   );
@@ -261,9 +293,9 @@ const nationalOfficialsContainer =
   );
 
 
-  /*
-  Location change.
-  */
+  /* =======================================================
+     Location change
+     ======================================================= */
 
   locationInput.addEventListener(
     "change",
@@ -272,16 +304,18 @@ const nationalOfficialsContainer =
       handleLocationChange(
         locationInput,
         localSection,
-        localOfficialsContainer
+        localOfficialsContainer,
+        nationalSection,
+        nationalOfficialsContainer
       );
 
     }
   );
 
 
-  /*
-  Form submission.
-  */
+  /* =======================================================
+     Form submission
+     ======================================================= */
 
   form.addEventListener(
     "submit",
@@ -292,6 +326,7 @@ const nationalOfficialsContainer =
         form,
         locationInput,
         localOfficialsContainer,
+        nationalOfficialsContainer,
         resultsSection,
         resultsContent,
         errorMessage
@@ -301,9 +336,9 @@ const nationalOfficialsContainer =
   );
 
 
-  /*
-  Print.
-  */
+  /* =======================================================
+     Print
+     ======================================================= */
 
   printButton.addEventListener(
     "click",
@@ -315,9 +350,9 @@ const nationalOfficialsContainer =
   );
 
 
-  /*
-  Edit.
-  */
+  /* =======================================================
+     Edit
+     ======================================================= */
 
   editButton.addEventListener(
     "click",
@@ -340,9 +375,9 @@ const nationalOfficialsContainer =
   );
 
 
-  /*
-  Start over.
-  */
+  /* =======================================================
+     Start over
+     ======================================================= */
 
   startOverButton.addEventListener(
     "click",
@@ -352,6 +387,8 @@ const nationalOfficialsContainer =
         form,
         localSection,
         localOfficialsContainer,
+        nationalSection,
+        nationalOfficialsContainer,
         resultsContent,
         resultsSection,
         errorMessage
@@ -395,11 +432,9 @@ async function loadDignitaryData() {
     );
 
 
-  /*
-  Warn if files are unexpectedly empty.
-  */
-
-  if (baseDignitaries.length === 0) {
+  if (
+    baseDignitaries.length === 0
+  ) {
 
     console.warn(
       "base.csv loaded but contains no records."
@@ -407,7 +442,10 @@ async function loadDignitaryData() {
 
   }
 
-  if (nationalCorrespondence.length === 0) {
+
+  if (
+    nationalCorrespondence.length === 0
+  ) {
 
     console.warn(
       "national.csv loaded but contains no records."
@@ -415,7 +453,10 @@ async function loadDignitaryData() {
 
   }
 
-  if (localOfficials.length === 0) {
+
+  if (
+    localOfficials.length === 0
+  ) {
 
     console.warn(
       "local.csv loaded but contains no records."
@@ -548,10 +589,6 @@ function parseCsv(
       !insideQuotes
     ) {
 
-      /*
-      Handle Windows CRLF.
-      */
-
       if (
         character === "\r" &&
         nextCharacter === "\n"
@@ -568,10 +605,6 @@ function parseCsv(
 
       field = "";
 
-
-      /*
-      Ignore completely blank rows.
-      */
 
       if (
         row.some(
@@ -630,10 +663,6 @@ function parseCsv(
   }
 
 
-  /*
-  No rows.
-  */
-
   if (
     rows.length === 0
   ) {
@@ -660,7 +689,7 @@ function parseCsv(
 
 
   /*
-  Convert each remaining row into an object.
+  Convert rows to objects.
   */
 
   return rows
@@ -701,12 +730,18 @@ function parseCsv(
 function handleLocationChange(
   locationInput,
   localSection,
-  localOfficialsContainer
+  localOfficialsContainer,
+  nationalSection,
+  nationalOfficialsContainer
 ) {
 
   const location =
     locationInput.value.trim();
 
+
+  /*
+  No location selected.
+  */
 
   if (!location) {
 
@@ -714,7 +749,14 @@ function handleLocationChange(
       "hidden"
     );
 
+    nationalSection.classList.add(
+      "hidden"
+    );
+
     localOfficialsContainer.innerHTML =
+      "";
+
+    nationalOfficialsContainer.innerHTML =
       "";
 
     return;
@@ -722,17 +764,32 @@ function handleLocationChange(
   }
 
 
+  /*
+  Render local invitation requests.
+  */
+
   renderLocalOfficials(
     location,
     localSection,
     localOfficialsContainer
   );
 
+
+  /*
+  Render national correspondence requests.
+  */
+
+  renderNationalOfficials(
+    location,
+    nationalSection,
+    nationalOfficialsContainer
+  );
+
 }
 
 
 /* =========================================================
-   Render local officials
+   Render local invitation requests
    ========================================================= */
 
 function renderLocalOfficials(
@@ -751,7 +808,7 @@ function renderLocalOfficials(
         isOfficialCurrent(
           official
         ) &&
-        officialAppliesToLocation(
+        localOfficialAppliesToLocation(
           official,
           location
         )
@@ -792,54 +849,10 @@ function renderLocalOfficials(
     official => {
 
       const label =
-        document.createElement(
-          "label"
+        createCheckbox(
+          official,
+          "local"
         );
-
-      label.className =
-        "checkbox-label";
-
-
-      const checkbox =
-        document.createElement(
-          "input"
-        );
-
-      checkbox.type =
-        "checkbox";
-
-      checkbox.checked =
-        true;
-
-
-      /*
-      Store the index in the original
-      localOfficials array.
-      */
-
-      checkbox.dataset.localIndex =
-        String(
-          localOfficials.indexOf(
-            official
-          )
-        );
-
-
-      const text =
-        document.createElement(
-          "span"
-        );
-
-      text.textContent =
-        buildOfficialLabel(
-          official
-        );
-
-
-      label.append(
-        checkbox,
-        text
-      );
 
 
       localOfficialsContainer.appendChild(
@@ -858,10 +871,172 @@ function renderLocalOfficials(
 
 
 /* =========================================================
+   Render national correspondence requests
+   ========================================================= */
+
+function renderNationalOfficials(
+  location,
+  nationalSection,
+  nationalOfficialsContainer
+) {
+
+  nationalOfficialsContainer.innerHTML =
+    "";
+
+
+  const applicableOfficials =
+    nationalCorrespondence.filter(
+      official =>
+        isOfficialCurrent(
+          official
+        ) &&
+        correspondenceAppliesToLocation(
+          official,
+          location
+        )
+    );
+
+
+  if (
+    applicableOfficials.length === 0
+  ) {
+
+    const message =
+      document.createElement(
+        "p"
+      );
+
+    message.className =
+      "help";
+
+    message.textContent =
+      "No correspondence officials are currently listed for this location.";
+
+
+    nationalOfficialsContainer.appendChild(
+      message
+    );
+
+
+    nationalSection.classList.remove(
+      "hidden"
+    );
+
+    return;
+
+  }
+
+
+  applicableOfficials.forEach(
+    official => {
+
+      const label =
+        createCheckbox(
+          official,
+          "national"
+        );
+
+
+      nationalOfficialsContainer.appendChild(
+        label
+      );
+
+    }
+  );
+
+
+  nationalSection.classList.remove(
+    "hidden"
+  );
+
+}
+
+
+/* =========================================================
+   Create checkbox
+   ========================================================= */
+
+function createCheckbox(
+  official,
+  type
+) {
+
+  const label =
+    document.createElement(
+      "label"
+    );
+
+  label.className =
+    "checkbox-label";
+
+
+  const checkbox =
+    document.createElement(
+      "input"
+    );
+
+  checkbox.type =
+    "checkbox";
+
+  checkbox.checked =
+    true;
+
+
+  /*
+  Store the original array index so we
+  can retrieve the official later.
+  */
+
+  if (
+    type === "local"
+  ) {
+
+    checkbox.dataset.localIndex =
+      String(
+        localOfficials.indexOf(
+          official
+        )
+      );
+
+  } else {
+
+    checkbox.dataset.nationalIndex =
+      String(
+        nationalCorrespondence.indexOf(
+          official
+        )
+      );
+
+  }
+
+
+  const text =
+    document.createElement(
+      "span"
+    );
+
+  text.textContent =
+    buildOfficialLabel(
+      official
+    );
+
+
+  label.append(
+    checkbox,
+    text
+  );
+
+
+  return label;
+
+}
+
+
+/* =========================================================
    Local geographic filtering
    ========================================================= */
 
-function officialAppliesToLocation(
+function localOfficialAppliesToLocation(
   official,
   location
 ) {
@@ -873,11 +1048,8 @@ function officialAppliesToLocation(
 
 
   /*
-  A local official with no towns does NOT
-  automatically apply everywhere.
-
-  Local officials need an explicit town
-  or ALL.
+  Local officials require an explicit
+  town or ALL.
   */
 
   if (
@@ -921,11 +1093,7 @@ function correspondenceAppliesToLocation(
 
 
   /*
-  IMPORTANT:
-
-  For national.csv, a blank towns field
-  means the official applies to EVERY
-  location.
+  Blank towns means EVERY location.
   */
 
   if (
@@ -938,7 +1106,7 @@ function correspondenceAppliesToLocation(
 
 
   /*
-  ALL also means every location.
+  ALL means EVERY location.
   */
 
   if (
@@ -951,8 +1119,8 @@ function correspondenceAppliesToLocation(
 
 
   /*
-  Otherwise the selected location must
-  appear in the towns list.
+  Otherwise the selected location
+  must be in the towns list.
   */
 
   return towns.includes(
@@ -963,7 +1131,7 @@ function correspondenceAppliesToLocation(
 
 
 /* =========================================================
-   Get towns from an official
+   Get towns
    ========================================================= */
 
 function getOfficialTowns(
@@ -1071,8 +1239,7 @@ function isOfficialCurrent(
 
 
   /*
-  Prevent JavaScript from accepting
-  impossible dates such as February 31.
+  Reject impossible dates.
   */
 
   if (
@@ -1093,7 +1260,8 @@ function isOfficialCurrent(
 
 
   /*
-  Compare calendar dates at midnight.
+  The official remains current
+  through the listed term-end date.
   */
 
   const today =
@@ -1157,7 +1325,7 @@ function buildOfficialLabel(
 
 
   return parts.join(
-    " "
+    " — "
   );
 
 }
@@ -1172,12 +1340,21 @@ function handleGenerate(
   form,
   locationInput,
   localOfficialsContainer,
+  nationalOfficialsContainer,
   resultsSection,
   resultsContent,
   errorMessage
 ) {
 
+  /*
+  VERY IMPORTANT:
+
+  Prevent the browser from submitting the form
+  and adding ?location= to the URL.
+  */
+
   event.preventDefault();
+  event.stopPropagation();
 
 
   /*
@@ -1203,11 +1380,12 @@ function handleGenerate(
   const location =
     locationInput.value.trim();
 
+
   /*
   Base dignitaries.
 
-  Every current base dignitary is
-  included as an invitation.
+  These are ALWAYS invitations and do
+  not have checkboxes.
   */
 
   const invitations =
@@ -1220,50 +1398,35 @@ function handleGenerate(
 
 
   /*
-  Add selected local officials.
+  Selected local invitation requests.
   */
 
-  const selectedLocalOfficials =
+  const invitationRequests =
     getSelectedLocalOfficials(
       localOfficialsContainer
     );
 
 
-  invitations.push(
-    ...selectedLocalOfficials
-  );
-
-
   /*
-  National correspondence.
-
-  Blank towns = everyone.
-  ALL = everyone.
-  Otherwise town must match.
+  Selected national correspondence requests.
   */
 
-  const correspondence =
-    nationalCorrespondence.filter(
-      official =>
-        isOfficialCurrent(
-          official
-        ) &&
-        correspondenceAppliesToLocation(
-          official,
-          location
-        )
+  const correspondenceRequests =
+    getSelectedNationalOfficials(
+      nationalOfficialsContainer
     );
 
 
   /*
-  Render.
+  Render the three separate groups.
   */
 
   renderResults(
     {
       location,
       invitations,
-      correspondence
+      invitationRequests,
+      correspondenceRequests
     },
     resultsContent
   );
@@ -1300,7 +1463,7 @@ function getSelectedLocalOfficials(
 
   const checkboxes =
     localOfficialsContainer.querySelectorAll(
-      'input[type="checkbox"]'
+      'input[type="checkbox"][data-local-index]'
     );
 
 
@@ -1352,6 +1515,67 @@ function getSelectedLocalOfficials(
 
 
 /* =========================================================
+   Get selected national officials
+   ========================================================= */
+
+function getSelectedNationalOfficials(
+  nationalOfficialsContainer
+) {
+
+  const checkboxes =
+    nationalOfficialsContainer.querySelectorAll(
+      'input[type="checkbox"][data-national-index]'
+    );
+
+
+  const selected = [];
+
+
+  checkboxes.forEach(
+    checkbox => {
+
+      if (
+        !checkbox.checked
+      ) {
+
+        return;
+
+      }
+
+
+      const index =
+        Number(
+          checkbox.dataset.nationalIndex
+        );
+
+
+      const official =
+        nationalCorrespondence[index];
+
+
+      if (
+        official &&
+        isOfficialCurrent(
+          official
+        )
+      ) {
+
+        selected.push(
+          official
+        );
+
+      }
+
+    }
+  );
+
+
+  return selected;
+
+}
+
+
+/* =========================================================
    Render final results
    ========================================================= */
 
@@ -1365,7 +1589,7 @@ function renderResults(
 
 
   /*
-  Print-only heading.
+  Print heading.
   */
 
   const heading =
@@ -1402,7 +1626,7 @@ function renderResults(
 
 
   /*
-  Address.
+  Selected location.
   */
 
   if (
@@ -1417,24 +1641,8 @@ function renderResults(
     address.className =
       "print-address";
 
-
-    const addressParts = [];
-
-    if (
-      data.location
-    ) {
-
-      addressParts.push(
-        data.location
-      );
-
-    }
-
-
     address.textContent =
-      addressParts.join(
-        ", "
-      );
+      data.location;
 
 
     heading.appendChild(
@@ -1450,7 +1658,7 @@ function renderResults(
 
 
   /*
-  Invitations.
+  1. Base invitations.
   */
 
   resultsContent.appendChild(
@@ -1462,13 +1670,25 @@ function renderResults(
 
 
   /*
-  Correspondence.
+  2. Local invitation requests.
   */
 
   resultsContent.appendChild(
     createResultsGroup(
-      "Correspondence",
-      data.correspondence
+      "Invitation Requests",
+      data.invitationRequests
+    )
+  );
+
+
+  /*
+  3. National correspondence requests.
+  */
+
+  resultsContent.appendChild(
+    createResultsGroup(
+      "Correspondence Requests",
+      data.correspondenceRequests
     )
   );
 
@@ -1758,6 +1978,8 @@ function handleStartOver(
   form,
   localSection,
   localOfficialsContainer,
+  nationalSection,
+  nationalOfficialsContainer,
   resultsContent,
   resultsSection,
   errorMessage
@@ -1770,8 +1992,15 @@ function handleStartOver(
     "hidden"
   );
 
+  nationalSection.classList.add(
+    "hidden"
+  );
+
 
   localOfficialsContainer.innerHTML =
+    "";
+
+  nationalOfficialsContainer.innerHTML =
     "";
 
 
@@ -1782,7 +2011,6 @@ function handleStartOver(
   resultsSection.classList.add(
     "hidden"
   );
-
 
   form.classList.remove(
     "hidden"
@@ -1848,7 +2076,7 @@ function hideError(
 window.EagleDignitary = {
 
   version:
-    "2.0.0",
+    "3.0.0",
 
   files: {
 
