@@ -1,17 +1,19 @@
 organization,title,name,contact,term_end,towns,second_election
+New York,State Senator,Steve Rhoads,,,,
+New York,State Assemblymember,Dave McDonough,,,,
 Nassau County,Executive,Bruce Blakeman,bblakeman@nassaucountyny.gov,2028-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford;Massapequa;Massapequa Park;Farmingdale,2032
-Nassau County,District Attorney,Anne Donnelly,,,,
-Nassau County,Comptroller,Elaine Phillips,,,,
-Nassau County,Clerk,Maureen O'Connell,,,,
-Nassau County,Police Commissioner,Pat Ryder,,,,
+Nassau County,District Attorney,Anne Donnelly,,2029-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford;Massapequa;Massapequa Park;Farmingdale,2033
+Nassau County,Comptroller,Elaine Phillips,,2028-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford;Massapequa;Massapequa Park;Farmingdale,2032
+Nassau County,Clerk,Maureen O'Connell,,2029-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford;Massapequa;Massapequa Park;Farmingdale,2033
+Nassau County,Police Commissioner,Pat Ryder,,,Freeport;Merrick;Bellmore;Wantagh;Seaford;Massapequa;Massapequa Park;Farmingdale,
 Nassau County,Legislator,Debra Mule,dmule@nassaucountyny.gov,2026-12-31,Freeport,2028
 Nassau County,Legislator,Michael Giangregorio,mgiangregorio@nassaucountyny.gov,2026-12-31,Merrick;Bellmore,2028
 Nassau County,Legislator,Kayla Knight,kknight@nassaucountyny.gov,2026-12-31,Wantagh;Seaford,2028
 Nassau County,Legislator,James Kennedy,jkennedy@nassaucountyny.gov,2026-12-31,Massapequa;Massapequa Park,2028
 Suffolk County,Executive,Ed Romaine,county.executive@suffolkcountyny.gov,2027-12-31,Amityville;Copiague;Lindenhurst,2030
-Suffolk County,District Attorney,,,,,
-Suffolk County,Comptroller,,,,,
-Suffolk County,Clerk,,,,,
+Suffolk County,District Attorney,,,2029-12-31,,2033
+Suffolk County,Comptroller,,,2028-12-31,,2032
+Suffolk County,Clerk,,,2029-12-31,,2033
 Suffolk County,Police Commissioner,,,,,
 Suffolk County,Legislator,Jason Richberg,jason.richberg@suffolkcountyny.gov,2028-12-31,Amityville;Copiague,2032
 Suffolk County,Legislator,RJ Renna,rj.renna@suffolkcountyny.gov,2028-12-31,Copiague;Lindenhurst,2032
