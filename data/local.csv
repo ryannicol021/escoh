@@ -1,4 +1,6 @@
-organization,title,name,contact,term_end,towns
-Nassau County,Executive,Bruce Blakeman,https://forms.nassaucountyny.gov/contact/agencies/ce/contact.php,2029-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford;Massapequa;Massapequa Park;Farmingdale
+organization,title,name,contact,term_end,towns,second_election
+Nassau County,Executive,Bruce Blakeman,bblakeman@nassaucountyny.gov,2028-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford;Massapequa;Massapequa Park;Farmingdale,2032
+Nassau County,Legislator,Debra Mule,dmule@nassaucountyny.gov,2026-12-31,Freeport,2028
+Nassau County,Legislator,Kayla Knight,kknight@nassaucountyny.gov,2026-12-31,Wantagh;Seaford,2028
 Suffolk County,Executive,Ed Romaine,county.executive@suffolkcountyny.gov,2027-12-31,Amityville;Copiague;Lindenhurst
-Town of Hempstead,Supervisor,John Ferretti,jferretti@hempsteadny.gov,2027-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford
+Town of Hempstead,Supervisor,John Ferretti,jferretti@hempsteadny.gov,2026-12-31,Freeport;Merrick;Bellmore;Wantagh;Seaford
