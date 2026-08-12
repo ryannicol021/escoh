@@ -835,17 +835,18 @@ textarea {
 }
 
 .dignitary-organization {
-  font-weight: bold;
+  font-weight: normal;
   text-align: left;
 }
 
 .dignitary-title {
-  font-weight: bold;
+  font-weight: normal;
   text-align: left;
+  font-style: italic;
 }
 
 .dignitary-name {
-  font-weight: normal;
+  font-weight: bold;
   text-align: left;
 }
 
