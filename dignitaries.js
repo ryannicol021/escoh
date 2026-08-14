@@ -121,34 +121,9 @@ async function initialize() {
       "national-officials"
     );
 
-  const resultsSection =
-    document.getElementById(
-      "results-section"
-    );
-
-  const resultsContent =
-    document.getElementById(
-      "results-content"
-    );
-
   const errorMessage =
     document.getElementById(
       "error-message"
-    );
-
-  const printButton =
-    document.getElementById(
-      "print-button"
-    );
-
-  const editButton =
-    document.getElementById(
-      "edit-button"
-    );
-
-  const startOverButton =
-    document.getElementById(
-      "start-over"
     );
 
 
@@ -195,39 +170,9 @@ async function initialize() {
     );
   }
 
-  if (!resultsSection) {
-    missingElements.push(
-      "results-section"
-    );
-  }
-
-  if (!resultsContent) {
-    missingElements.push(
-      "results-content"
-    );
-  }
-
   if (!errorMessage) {
     missingElements.push(
       "error-message"
-    );
-  }
-
-  if (!printButton) {
-    missingElements.push(
-      "print-button"
-    );
-  }
-
-  if (!editButton) {
-    missingElements.push(
-      "edit-button"
-    );
-  }
-
-  if (!startOverButton) {
-    missingElements.push(
-      "start-over"
     );
   }
 
@@ -319,78 +264,14 @@ async function initialize() {
 
   form.addEventListener(
     "submit",
-    event => {
+    async event => {
 
-      handleGenerate(
+      await handleGenerate(
         event,
         form,
         locationInput,
         localOfficialsContainer,
         nationalOfficialsContainer,
-        resultsSection,
-        resultsContent,
-        errorMessage
-      );
-
-    }
-  );
-
-
-  /* =======================================================
-     Print
-     ======================================================= */
-
-  printButton.addEventListener(
-    "click",
-    () => {
-
-      window.print();
-
-    }
-  );
-
-
-  /* =======================================================
-     Edit
-     ======================================================= */
-
-  editButton.addEventListener(
-    "click",
-    () => {
-
-      resultsSection.classList.add(
-        "hidden"
-      );
-
-      form.classList.remove(
-        "hidden"
-      );
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
-
-    }
-  );
-
-
-  /* =======================================================
-     Start over
-     ======================================================= */
-
-  startOverButton.addEventListener(
-    "click",
-    () => {
-
-      handleStartOver(
-        form,
-        localSection,
-        localOfficialsContainer,
-        nationalSection,
-        nationalOfficialsContainer,
-        resultsContent,
-        resultsSection,
         errorMessage
       );
 
@@ -1332,17 +1213,15 @@ function buildOfficialLabel(
 
 
 /* =========================================================
-   Generate results
+   Generate and export results
    ========================================================= */
 
-function handleGenerate(
+async function handleGenerate(
   event,
   form,
   locationInput,
   localOfficialsContainer,
   nationalOfficialsContainer,
-  resultsSection,
-  resultsContent,
   errorMessage
 ) {
 
@@ -1418,37 +1297,75 @@ function handleGenerate(
 
 
   /*
-  Render the three separate groups.
+  Find the submit button.
   */
 
-  renderResults(
-    {
-      location,
-      invitations,
-      invitationRequests,
-      correspondenceRequests
-    },
-    resultsContent
-  );
+  const submitButton =
+    form.querySelector(
+      'button[type="submit"]'
+    );
+
+
+  const originalButtonText =
+    submitButton
+      ? submitButton.textContent
+      : "";
 
 
   /*
-  Switch from form to results.
+  Prevent multiple PDF generations
+  while the first one is running.
   */
 
-  form.classList.add(
-    "hidden"
-  );
+  if (submitButton) {
 
-  resultsSection.classList.remove(
-    "hidden"
-  );
+    submitButton.disabled =
+      true;
+
+    submitButton.textContent =
+      "Generating PDF...";
+
+  }
 
 
-  resultsSection.scrollIntoView({
-    behavior: "smooth",
-    block: "start"
-  });
+  try {
+
+    await exportDignitaryPdf(
+      {
+        location,
+        invitations,
+        invitationRequests,
+        correspondenceRequests
+      }
+    );
+
+  } catch (error) {
+
+    console.error(
+      "Could not generate dignitary PDF:",
+      error
+    );
+
+    showError(
+      errorMessage,
+      "The dignitary PDF could not be generated. " +
+      "Please try again."
+    );
+
+  } finally {
+
+    if (submitButton) {
+
+      submitButton.disabled =
+        false;
+
+      submitButton.textContent =
+        originalButtonText ||
+        "Export Dignitary List";
+
+    }
+
+  }
 
 }
 
@@ -1576,34 +1493,367 @@ function getSelectedNationalOfficials(
 
 
 /* =========================================================
-   Render final results
+   PDF EXPORT
    ========================================================= */
 
-function renderResults(
-  data,
-  resultsContent
+async function exportDignitaryPdf(
+  data
 ) {
 
-  resultsContent.innerHTML =
-    "";
+  if (
+    typeof html2pdf === "undefined"
+  ) {
+
+    throw new Error(
+      "html2pdf.js is not loaded."
+    );
+
+  }
 
 
   /*
-  Print heading.
+  Create a temporary HTML document
+  specifically for the PDF.
   */
 
-  const heading =
+  const pdfRoot =
     document.createElement(
       "div"
     );
 
-  heading.className =
-    "print-header";
+  pdfRoot.className =
+    "pdf-export-root";
+
+
+  /*
+  Keep the temporary HTML off-screen.
+  */
+
+  pdfRoot.style.position =
+    "fixed";
+
+  pdfRoot.style.left =
+    "-100000px";
+
+  pdfRoot.style.top =
+    "0";
+
+  pdfRoot.style.width =
+    "8.5in";
+
+  pdfRoot.style.background =
+    "#ffffff";
+
+  pdfRoot.style.zIndex =
+    "-1";
+
+
+  document.body.appendChild(
+    pdfRoot
+  );
+
+
+  try {
+
+    /*
+    Three groups are deliberately created
+    as separate PDF page sections.
+
+    Groups 2 and 3 therefore always begin
+    on a new page.
+    */
+
+    const groups = [
+
+      {
+        title:
+          "Universal Dignitary Invites",
+
+        officials:
+          data.invitations
+      },
+
+      {
+        title:
+          "Location-Specific Dignitary Invites",
+
+        officials:
+          data.invitationRequests
+      },
+
+      {
+        title:
+          "Correspondence Requests",
+
+        officials:
+          data.correspondenceRequests
+      }
+
+    ];
+
+
+    /*
+    First page.
+    */
+
+    let currentPage =
+      createPdfPage(
+        pdfRoot
+      );
+
+
+    createPdfDocumentHeader(
+      currentPage,
+      data.location
+    );
+
+
+    createPdfGroupHeading(
+      currentPage,
+      groups[0].title
+    );
+
+
+    await waitForPdfLayout();
+
+
+    await addOfficialsToPdfPages(
+      pdfRoot,
+      currentPage,
+      groups[0].officials
+    );
+
+
+    /*
+    Each remaining group begins on a
+    new PDF page.
+    */
+
+    for (
+      let groupIndex = 1;
+      groupIndex < groups.length;
+      groupIndex++
+    ) {
+
+      const group =
+        groups[groupIndex];
+
+
+      currentPage =
+        createPdfPage(
+          pdfRoot
+        );
+
+
+      createPdfGroupHeading(
+        currentPage,
+        group.title
+      );
+
+
+      await waitForPdfLayout();
+
+
+      await addOfficialsToPdfPages(
+        pdfRoot,
+        currentPage,
+        group.officials
+      );
+
+    }
+
+
+    await waitForPdfLayout();
+
+
+    /*
+    Convert the temporary HTML into a
+    downloadable standard PDF.
+    */
+
+    const options = {
+
+      margin:
+        0,
+
+      filename:
+        buildPdfFilename(
+          data.location
+        ),
+
+      image: {
+
+        type:
+          "jpeg",
+
+        quality:
+          0.98
+
+      },
+
+      html2canvas: {
+
+        scale:
+          2,
+
+        backgroundColor:
+          "#ffffff",
+
+        useCORS:
+          true,
+
+        logging:
+          false
+
+      },
+
+      jsPDF: {
+
+        unit:
+          "in",
+
+        format:
+          "letter",
+
+        orientation:
+          "portrait",
+
+        compress:
+          true
+
+      },
+
+      pagebreak: {
+
+        mode:
+          [
+            "css"
+          ]
+
+      }
+
+    };
+
+
+    await html2pdf()
+      .set(options)
+      .from(pdfRoot)
+      .save();
+
+  } finally {
+
+    /*
+    Remove the temporary PDF HTML
+    from the website.
+    */
+
+    pdfRoot.remove();
+
+  }
+
+}
+
+
+/* =========================================================
+   Create PDF page
+   ========================================================= */
+
+function createPdfPage(
+  pdfRoot
+) {
+
+  const page =
+    document.createElement(
+      "section"
+    );
+
+  page.className =
+    "pdf-page";
+
+
+  const content =
+    document.createElement(
+      "div"
+    );
+
+  content.className =
+    "pdf-page-content";
+
+
+  const columns =
+    document.createElement(
+      "div"
+    );
+
+  columns.className =
+    "pdf-columns";
+
+
+  const leftColumn =
+    document.createElement(
+      "div"
+    );
+
+  leftColumn.className =
+    "pdf-column";
+
+
+  const rightColumn =
+    document.createElement(
+      "div"
+    );
+
+  rightColumn.className =
+    "pdf-column";
+
+
+  columns.append(
+    leftColumn,
+    rightColumn
+  );
+
+
+  content.append(
+    columns
+  );
+
+
+  page.append(
+    content
+  );
+
+
+  pdfRoot.appendChild(
+    page
+  );
+
+
+  return page;
+
+}
+
+
+/* =========================================================
+   PDF document header
+   ========================================================= */
+
+function createPdfDocumentHeader(
+  page,
+  location
+) {
+
+  const header =
+    document.createElement(
+      "header"
+    );
+
+  header.className =
+    "pdf-document-header";
 
 
   const title =
     document.createElement(
-      "h2"
+      "h1"
     );
 
   title.textContent =
@@ -1612,120 +1862,106 @@ function renderResults(
 
   const subtitle =
     document.createElement(
-      "h3"
+      "h2"
     );
 
   subtitle.textContent =
     "Dignitary Invitations & Correspondence";
 
 
-  heading.append(
-    title,
-    subtitle
-  );
-
-
-  /*
-  Selected location.
-  */
-
-  if (
-    data.location
-  ) {
-
-    const address =
-      document.createElement(
-        "p"
-      );
-
-    address.className =
-      "print-address";
-
-    address.textContent =
-      data.location;
-
-
-    heading.appendChild(
-      address
+  const locationElement =
+    document.createElement(
+      "p"
     );
 
-  }
+  locationElement.className =
+    "pdf-location";
+
+  locationElement.textContent =
+    location;
 
 
-  resultsContent.appendChild(
-    heading
+  header.append(
+    title,
+    subtitle,
+    locationElement
   );
 
 
-  /*
-  1. Base invitations.
-  */
-
-  resultsContent.appendChild(
-    createResultsGroup(
-      "Universal Dignitary Invites",
-      data.invitations
-    )
-  );
+  const content =
+    page.querySelector(
+      ".pdf-page-content"
+    );
 
 
-  /*
-  2. Local invitation requests.
-  */
-
-  resultsContent.appendChild(
-    createResultsGroup(
-      "Location-Specific Dignitary Invites",
-      data.invitationRequests
-    )
-  );
+  const columns =
+    page.querySelector(
+      ".pdf-columns"
+    );
 
 
-  /*
-  3. National correspondence requests.
-  */
-
-  resultsContent.appendChild(
-    createResultsGroup(
-      "Correspondence Requests",
-      data.correspondenceRequests
-    )
+  content.insertBefore(
+    header,
+    columns
   );
 
 }
 
 
 /* =========================================================
-   Create results group
+   PDF group heading
    ========================================================= */
 
-function createResultsGroup(
-  title,
-  officials
+function createPdfGroupHeading(
+  page,
+  title
 ) {
-
-  const section =
-    document.createElement(
-      "section"
-    );
-
-  section.className =
-    "dignitary-group";
-
 
   const heading =
     document.createElement(
       "h3"
     );
 
+  heading.className =
+    "pdf-group-heading";
+
   heading.textContent =
     title;
 
 
-  section.appendChild(
-    heading
+  const content =
+    page.querySelector(
+      ".pdf-page-content"
+    );
+
+
+  const columns =
+    page.querySelector(
+      ".pdf-columns"
+    );
+
+
+  content.insertBefore(
+    heading,
+    columns
   );
 
+}
+
+
+/* =========================================================
+   Add officials to PDF pages
+   ========================================================= */
+
+async function addOfficialsToPdfPages(
+  pdfRoot,
+  startingPage,
+  officials
+) {
+
+  /*
+  No officials.
+  */
 
   if (
     officials.length === 0
@@ -1737,69 +1973,239 @@ function createResultsGroup(
       );
 
     empty.className =
-      "help";
+      "pdf-empty";
 
     empty.textContent =
       "None.";
 
 
-    section.appendChild(
-      empty
-    );
+    startingPage
+      .querySelector(
+        ".pdf-columns"
+      )
+      .appendChild(
+        empty
+      );
 
-
-    return section;
+    return;
 
   }
 
 
-  const list =
-    document.createElement(
-      "div"
+  await waitForPdfLayout();
+
+
+  let currentPage =
+    startingPage;
+
+
+  let leftColumn =
+    currentPage.querySelector(
+      ".pdf-column"
     );
 
-  list.className =
-    "dignitary-list";
+
+  let rightColumn =
+    currentPage.querySelectorAll(
+      ".pdf-column"
+    )[1];
 
 
-  officials.forEach(
-    official => {
+  for (
+    const official of officials
+  ) {
 
-      list.appendChild(
-        createOfficialResult(
-          official
-        )
+    const item =
+      createPdfOfficialElement(
+        official
       );
 
+
+    /*
+    Measure the complete dignitary.
+    */
+
+    leftColumn.appendChild(
+      item
+    );
+
+
+    await waitForPdfLayout();
+
+
+    const itemHeight =
+      item.getBoundingClientRect()
+        .height;
+
+
+    leftColumn.removeChild(
+      item
+    );
+
+
+    /*
+    Determine the current heights
+    of both columns.
+    */
+
+    const leftHeight =
+      leftColumn
+        .getBoundingClientRect()
+        .height;
+
+
+    const rightHeight =
+      rightColumn
+        .getBoundingClientRect()
+        .height;
+
+
+    /*
+    Use the shorter column first.
+    */
+
+    let targetColumn;
+
+    if (
+      leftHeight <= rightHeight
+    ) {
+
+      targetColumn =
+        leftColumn;
+
+    } else {
+
+      targetColumn =
+        rightColumn;
+
     }
-  );
 
 
-  section.appendChild(
-    list
-  );
+    const columns =
+      currentPage.querySelector(
+        ".pdf-columns"
+      );
 
 
-  return section;
+    const availableHeight =
+      columns
+        .getBoundingClientRect()
+        .height;
+
+
+    const targetHeight =
+      targetColumn
+        .getBoundingClientRect()
+        .height;
+
+
+    const remainingHeight =
+      availableHeight -
+      targetHeight;
+
+
+    /*
+    If the complete dignitary does not
+    fit in the preferred column, try
+    the other column.
+    */
+
+    if (
+      itemHeight > remainingHeight
+    ) {
+
+      const otherColumn =
+        targetColumn === leftColumn
+          ? rightColumn
+          : leftColumn;
+
+
+      const otherHeight =
+        otherColumn
+          .getBoundingClientRect()
+          .height;
+
+
+      const otherRemainingHeight =
+        availableHeight -
+        otherHeight;
+
+
+      if (
+        itemHeight <= otherRemainingHeight
+      ) {
+
+        targetColumn =
+          otherColumn;
+
+      } else {
+
+        /*
+        The entire dignitary does not fit
+        in either column.
+
+        Create a new page and put the
+        complete dignitary at the top
+        of the first column.
+        */
+
+        currentPage =
+          createPdfPage(
+            pdfRoot
+          );
+
+
+        leftColumn =
+          currentPage.querySelector(
+            ".pdf-column"
+          );
+
+
+        rightColumn =
+          currentPage.querySelectorAll(
+            ".pdf-column"
+          )[1];
+
+
+        targetColumn =
+          leftColumn;
+
+      }
+
+    }
+
+
+    /*
+    Add the complete dignitary.
+    */
+
+    targetColumn.appendChild(
+      item
+    );
+
+
+    await waitForPdfLayout();
+
+  }
 
 }
 
 
 /* =========================================================
-   Create one official result
+   Create PDF official
    ========================================================= */
 
-function createOfficialResult(
+function createPdfOfficialElement(
   official
 ) {
 
   const item =
     document.createElement(
-      "div"
+      "article"
     );
 
   item.className =
-    "dignitary-item";
+    "pdf-official";
 
 
   const organization =
@@ -1808,7 +2214,7 @@ function createOfficialResult(
     );
 
   organization.className =
-    "dignitary-organization";
+    "pdf-official-organization";
 
   organization.textContent =
     official.organization || "";
@@ -1820,7 +2226,7 @@ function createOfficialResult(
     );
 
   title.className =
-    "dignitary-title";
+    "pdf-official-title";
 
   title.textContent =
     official.title || "";
@@ -1832,7 +2238,7 @@ function createOfficialResult(
     );
 
   name.className =
-    "dignitary-name";
+    "pdf-official-name";
 
   name.textContent =
     official.name || "";
@@ -1844,6 +2250,11 @@ function createOfficialResult(
     );
 
 
+  contact.classList.add(
+    "pdf-official-contact"
+  );
+
+
   item.append(
     organization,
     title,
@@ -1853,6 +2264,60 @@ function createOfficialResult(
 
 
   return item;
+
+}
+
+
+/* =========================================================
+   Wait for PDF layout
+   ========================================================= */
+
+function waitForPdfLayout() {
+
+  return new Promise(
+    resolve => {
+
+      requestAnimationFrame(
+        () => {
+
+          requestAnimationFrame(
+            resolve
+          );
+
+        }
+      );
+
+    }
+  );
+
+}
+
+
+/* =========================================================
+   PDF filename
+   ========================================================= */
+
+function buildPdfFilename(
+  location
+) {
+
+  const safeLocation =
+    String(
+      location || "Location"
+    )
+      .replace(
+        /[^a-z0-9]+/gi,
+        "-"
+      )
+      .replace(
+        /^-+|-+$/g,
+        ""
+      );
+
+
+  return (
+    `Eagle-Scout-Dignitary-List-${safeLocation}.pdf`
+  );
 
 }
 
@@ -1971,66 +2436,6 @@ function createContactElement(
 
 
 /* =========================================================
-   Start over
-   ========================================================= */
-
-function handleStartOver(
-  form,
-  localSection,
-  localOfficialsContainer,
-  nationalSection,
-  nationalOfficialsContainer,
-  resultsContent,
-  resultsSection,
-  errorMessage
-) {
-
-  form.reset();
-
-
-  localSection.classList.add(
-    "hidden"
-  );
-
-  nationalSection.classList.add(
-    "hidden"
-  );
-
-
-  localOfficialsContainer.innerHTML =
-    "";
-
-  nationalOfficialsContainer.innerHTML =
-    "";
-
-
-  resultsContent.innerHTML =
-    "";
-
-
-  resultsSection.classList.add(
-    "hidden"
-  );
-
-  form.classList.remove(
-    "hidden"
-  );
-
-
-  hideError(
-    errorMessage
-  );
-
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth"
-  });
-
-}
-
-
-/* =========================================================
    Error handling
    ========================================================= */
 
@@ -2076,7 +2481,7 @@ function hideError(
 window.EagleDignitary = {
 
   version:
-    "3.0.0",
+    "4.0.0",
 
   files: {
 
