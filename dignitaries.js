@@ -1663,7 +1663,7 @@ function renderResults(
 
   resultsContent.appendChild(
     createResultsGroup(
-      "Invitations",
+      "Universal Dignitary Invites",
       data.invitations
     )
   );
@@ -1675,7 +1675,7 @@ function renderResults(
 
   resultsContent.appendChild(
     createResultsGroup(
-      "Invitation Requests",
+      "Location-Specific Dignitary Invites",
       data.invitationRequests
     )
   );
