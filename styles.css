@@ -886,3 +886,295 @@ textarea {
   }
 
 }
+
+/* =========================================================
+   DIGNITARY PDF EXPORT
+   ========================================================= */
+
+.pdf-export-root {
+  width: 8.5in;
+  background: #ffffff;
+  color: #000000;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* ---------------------------------------------------------
+   PDF PAGE
+   --------------------------------------------------------- */
+
+.pdf-page {
+  width: 8.5in;
+  height: 11in;
+  box-sizing: border-box;
+  background: #ffffff;
+
+  padding: 0.55in 0.6in 0.55in 0.6in;
+
+  page-break-after: always;
+  break-after: page;
+
+  overflow: hidden;
+}
+
+
+.pdf-page:last-child {
+  page-break-after: auto;
+  break-after: auto;
+}
+
+
+.pdf-page-content {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* ---------------------------------------------------------
+   PDF DOCUMENT HEADER
+   --------------------------------------------------------- */
+
+.pdf-document-header {
+  flex: 0 0 auto;
+
+  text-align: center;
+
+  margin: 0 0 0.18in 0;
+  padding: 0;
+}
+
+
+.pdf-document-header h1 {
+  margin: 0;
+
+  font-size: 20pt;
+  line-height: 1.15;
+  font-weight: 700;
+}
+
+
+.pdf-document-header h2 {
+  margin: 0.06in 0 0;
+
+  font-size: 12pt;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+
+.pdf-location {
+  margin: 0.06in 0 0;
+
+  font-size: 10pt;
+  line-height: 1.2;
+  font-weight: 400;
+}
+
+
+/* ---------------------------------------------------------
+   PDF GROUP HEADING
+   --------------------------------------------------------- */
+
+.pdf-group-heading {
+  flex: 0 0 auto;
+
+  margin: 0 0 0.14in 0;
+  padding: 0;
+
+  text-align: center;
+
+  font-size: 13pt;
+  line-height: 1.2;
+  font-weight: 700;
+
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+
+/* ---------------------------------------------------------
+   TWO-COLUMN LAYOUT
+   --------------------------------------------------------- */
+
+.pdf-columns {
+  flex: 1 1 auto;
+
+  min-height: 0;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+
+  column-gap: 0.35in;
+
+  align-items: start;
+}
+
+
+.pdf-column {
+  min-width: 0;
+  min-height: 0;
+
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* ---------------------------------------------------------
+   INDIVIDUAL DIGNITARY
+   --------------------------------------------------------- */
+
+.pdf-official {
+  box-sizing: border-box;
+
+  width: 100%;
+
+  margin: 0 0 0.13in 0;
+  padding: 0;
+
+  font-size: 9.5pt;
+  line-height: 1.25;
+
+  text-align: left;
+
+  /*
+   * Keep the entire dignitary together.
+   * The JavaScript also measures the complete
+   * element before placing it.
+   */
+  page-break-inside: avoid;
+  break-inside: avoid;
+
+  /*
+   * Prevent the browser/html2pdf engine from
+   * treating the four lines as independent blocks.
+   */
+  display: block;
+}
+
+
+.pdf-official:last-child {
+  margin-bottom: 0;
+}
+
+
+/* ---------------------------------------------------------
+   DIGNITARY ORGANIZATION
+   --------------------------------------------------------- */
+
+.pdf-official-organization {
+  margin: 0;
+
+  font-size: 9.5pt;
+  line-height: 1.25;
+
+  font-weight: 700;
+
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+
+/* ---------------------------------------------------------
+   DIGNITARY TITLE
+   --------------------------------------------------------- */
+
+.pdf-official-title {
+  margin: 0;
+
+  font-size: 9.5pt;
+  line-height: 1.25;
+
+  font-weight: 400;
+}
+
+
+/* ---------------------------------------------------------
+   DIGNITARY NAME
+   --------------------------------------------------------- */
+
+.pdf-official-name {
+  margin: 0;
+
+  font-size: 9.5pt;
+  line-height: 1.25;
+
+  font-weight: 400;
+}
+
+
+/* ---------------------------------------------------------
+   CONTACT INFORMATION
+   --------------------------------------------------------- */
+
+.pdf-official-contact {
+  margin: 0;
+
+  font-size: 9pt;
+  line-height: 1.25;
+
+  font-weight: 400;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+.pdf-official-contact a {
+  color: #000000;
+  text-decoration: none;
+
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+
+/* ---------------------------------------------------------
+   EMPTY GROUP
+   --------------------------------------------------------- */
+
+.pdf-empty {
+  grid-column: 1 / -1;
+
+  margin: 0;
+
+  font-size: 9.5pt;
+  line-height: 1.25;
+
+  text-align: left;
+}
+
+
+/* ---------------------------------------------------------
+   HTML2PDF PAGE-BREAK HELPERS
+   --------------------------------------------------------- */
+
+.pdf-page {
+  page-break-before: auto;
+  page-break-after: always;
+
+  break-before: auto;
+  break-after: page;
+}
+
+
+.pdf-official {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+
+/* ---------------------------------------------------------
+   PDF PRINT-SAFE COLORS
+   --------------------------------------------------------- */
+
+.pdf-export-root,
+.pdf-export-root * {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
