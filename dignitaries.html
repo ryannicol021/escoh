@@ -171,76 +171,77 @@
       </section>
 
 
-<!-- LOCAL INVITATION REQUESTS -->
+      <!-- LOCAL INVITATION REQUESTS -->
 
-<section
-  id="local-section"
-  class="form-section hidden"
->
+      <section
+        id="local-section"
+        class="form-section hidden"
+      >
 
-  <div class="section-heading">
+        <div class="section-heading">
 
-    <span class="section-number">
-      2
-    </span>
+          <span class="section-number">
+            2
+          </span>
 
-    <div>
+          <div>
 
-      <h2>
-        Invitation Requests
-      </h2>
+            <h2>
+              Invitation Requests
+            </h2>
 
-      <p>
-        Applicable local officials are selected by default.
-        Uncheck anyone you do not want to invite.
-      </p>
+            <p>
+              Applicable local officials are selected by default.
+              Uncheck anyone you do not want to invite.
+            </p>
 
-    </div>
+          </div>
 
-  </div>
+        </div>
 
-  <div
-    id="local-officials"
-    class="checkbox-list"
-  ></div>
+        <div
+          id="local-officials"
+          class="checkbox-list"
+        ></div>
 
-</section>
+      </section>
 
 
-<!-- NATIONAL CORRESPONDENCE REQUESTS -->
+      <!-- NATIONAL CORRESPONDENCE REQUESTS -->
 
-<section
-  id="national-section"
-  class="form-section hidden"
->
+      <section
+        id="national-section"
+        class="form-section hidden"
+      >
 
-  <div class="section-heading">
+        <div class="section-heading">
 
-    <span class="section-number">
-      3
-    </span>
+          <span class="section-number">
+            3
+          </span>
 
-    <div>
+          <div>
 
-      <h2>
-        Correspondence Requests
-      </h2>
+            <h2>
+              Correspondence Requests
+            </h2>
 
-      <p>
-        Applicable national and state officials are selected
-        by default. Uncheck anyone you do not want to contact.
-      </p>
+            <p>
+              Applicable national and state officials are selected
+              by default. Uncheck anyone you do not want to contact.
+            </p>
 
-    </div>
+          </div>
 
-  </div>
+        </div>
 
-  <div
-    id="national-officials"
-    class="checkbox-list"
-  ></div>
+        <div
+          id="national-officials"
+          class="checkbox-list"
+        ></div>
 
-</section>
+      </section>
+      
       
       <!-- ACTIONS -->
 
@@ -250,70 +251,12 @@
           type="submit"
           class="primary-button"
         >
-          Generate Dignitary List
+          Export Dignitary List
         </button>
 
       </div>
 
     </form>
-
-
-    <!-- RESULTS -->
-
-    <section
-      id="results-section"
-      class="download-section hidden"
-    >
-
-      <div class="success-icon">
-        ✓
-      </div>
-
-      <h2>
-        Dignitary List Ready
-      </h2>
-
-      <p>
-        Review the list below. When you are ready, you can print or export it.
-      </p>
-
-
-      <div
-        id="results-content"
-        class="dignitary-results"
-      ></div>
-
-
-      <div class="form-actions">
-
-        <button
-          type="button"
-          id="print-button"
-          class="primary-button"
-        >
-          Print Dignitary List
-        </button>
-
-        <button
-          type="button"
-          id="edit-button"
-          class="secondary-button"
-        >
-          Edit List
-        </button>
-
-      </div>
-
-
-      <button
-        type="button"
-        id="start-over"
-        class="text-button"
-      >
-        Start Over
-      </button>
-
-    </section>
 
 
     <!-- ERROR -->
@@ -338,6 +281,8 @@
 
   </footer>
 
+
+  <script src="vendor/html2pdf.bundle.min.js"></script>
 
   <script src="dignitaries.js"></script>
 
