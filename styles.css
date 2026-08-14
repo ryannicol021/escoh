@@ -1178,3 +1178,37 @@ textarea {
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
+
+/* =========================================================
+   PDF EXPORT - DIRECT PAGE RENDERING
+   ========================================================= */
+
+.pdf-export-root {
+  position: fixed !important;
+
+  left: -10000px !important;
+  top: 0 !important;
+
+  width: 8.5in !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  background: #ffffff !important;
+
+  overflow: visible !important;
+}
+
+
+.pdf-export-root .pdf-page {
+  width: 8.5in !important;
+  height: 11in !important;
+
+  margin: 0 !important;
+
+  box-sizing: border-box !important;
+
+  background: #ffffff !important;
+
+  overflow: hidden !important;
+}
