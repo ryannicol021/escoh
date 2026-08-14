@@ -1501,11 +1501,22 @@ async function exportDignitaryPdf(
 ) {
 
   if (
-    typeof html2pdf === "undefined"
+    typeof html2canvas === "undefined"
   ) {
 
     throw new Error(
-      "html2pdf.js is not loaded."
+      "html2canvas is not loaded."
+    );
+
+  }
+
+
+  if (
+    typeof window.jspdf === "undefined"
+  ) {
+
+    throw new Error(
+      "jsPDF is not loaded."
     );
 
   }
@@ -1526,29 +1537,31 @@ async function exportDignitaryPdf(
 
 
   /*
-  Keep the temporary HTML off-screen.
+  Keep the PDF document in the DOM while
+  html2canvas renders it, but place it
+  safely outside the visible page.
   */
 
-pdfRoot.style.position =
-  "absolute";
+  pdfRoot.style.position =
+    "fixed";
 
-pdfRoot.style.left =
-  "0";
+  pdfRoot.style.left =
+    "-10000px";
 
-pdfRoot.style.top =
-  "0";
+  pdfRoot.style.top =
+    "0";
 
-pdfRoot.style.width =
-  "8.5in";
+  pdfRoot.style.width =
+    "8.5in";
 
-pdfRoot.style.background =
-  "#ffffff";
+  pdfRoot.style.background =
+    "#ffffff";
 
-pdfRoot.style.zIndex =
-  "9999";
+  pdfRoot.style.zIndex =
+    "-1";
 
-pdfRoot.style.pointerEvents =
-  "none";
+  pdfRoot.style.pointerEvents =
+    "none";
 
 
   document.body.appendChild(
@@ -1561,9 +1574,6 @@ pdfRoot.style.pointerEvents =
     /*
     Three groups are deliberately created
     as separate PDF page sections.
-
-    Groups 2 and 3 therefore always begin
-    on a new page.
     */
 
     const groups = [
@@ -1596,7 +1606,7 @@ pdfRoot.style.pointerEvents =
 
 
     /*
-    First page.
+    Create the first page.
     */
 
     let currentPage =
@@ -1629,7 +1639,7 @@ pdfRoot.style.pointerEvents =
 
     /*
     Each remaining group begins on a
-    new PDF page.
+    new page.
     */
 
     for (
@@ -1670,78 +1680,188 @@ pdfRoot.style.pointerEvents =
 
 
     /*
-    Convert the temporary HTML into a
-    downloadable standard PDF.
+    Find every manually-created PDF page.
     */
 
-    const options = {
+    const pages =
+      Array.from(
+        pdfRoot.querySelectorAll(
+          ".pdf-page"
+        )
+      );
 
-      margin:
-        0,
 
-      filename:
-        buildPdfFilename(
-          data.location
-        ),
+    if (
+      pages.length === 0
+    ) {
 
-      image: {
+      throw new Error(
+        "No PDF pages were created."
+      );
 
-        type:
-          "jpeg",
+    }
 
-        quality:
-          0.98
 
-      },
+    /*
+    Create the jsPDF document directly.
 
-      html2canvas: {
+    We are deliberately NOT using html2pdf here.
+    html2canvas renders each already-created
+    page individually, and jsPDF assembles
+    those images into the final PDF.
+    */
 
-        scale:
-          2,
+    const {
+      jsPDF
+    } = window.jspdf;
 
-        backgroundColor:
-          "#ffffff",
 
-        useCORS:
-          true,
+    const pdf =
+      new jsPDF(
+        {
+          unit:
+            "in",
 
-        logging:
-          false
+          format:
+            "letter",
 
-      },
+          orientation:
+            "portrait",
 
-      jsPDF: {
+          compress:
+            true
+        }
+      );
 
-        unit:
-          "in",
 
-        format:
-          "letter",
+    /*
+    Render every PDF page separately.
+    */
 
-        orientation:
-          "portrait",
+    for (
+      let pageIndex = 0;
+      pageIndex < pages.length;
+      pageIndex++
+    ) {
 
-        compress:
-          true
+      const page =
+        pages[pageIndex];
 
-      },
 
-      pagebreak: {
+      await waitForPdfLayout();
 
-        mode:
-          [
-            "css"
-          ]
+
+      const canvas =
+        await html2canvas(
+          page,
+          {
+            scale:
+              2,
+
+            backgroundColor:
+              "#ffffff",
+
+            useCORS:
+              true,
+
+            logging:
+              false,
+
+            /*
+            Explicitly tell html2canvas
+            the dimensions of the element
+            being rendered.
+            */
+
+            width:
+              page.scrollWidth,
+
+            height:
+              page.scrollHeight,
+
+            windowWidth:
+              page.scrollWidth,
+
+            windowHeight:
+              page.scrollHeight,
+
+            x:
+              0,
+
+            y:
+              0,
+
+            scrollX:
+              0,
+
+            scrollY:
+              0
+          }
+        );
+
+
+      /*
+      Make sure the canvas actually contains
+      something before adding it to the PDF.
+      */
+
+      if (
+        canvas.width === 0 ||
+        canvas.height === 0
+      ) {
+
+        throw new Error(
+          `PDF page ${pageIndex + 1} rendered with zero dimensions.`
+        );
 
       }
 
-    };
+
+      /*
+      The first jsPDF page already exists.
+      Additional pages must be added manually.
+      */
+
+      if (
+        pageIndex > 0
+      ) {
+
+        pdf.addPage(
+          "letter",
+          "portrait"
+        );
+
+      }
 
 
-    await html2pdf()
-      .set(options)
-      .from(pdfRoot)
-      .save();
+      /*
+      Place the rendered page exactly
+      inside the letter-size PDF page.
+      */
+
+      pdf.addImage(
+        canvas,
+        "JPEG",
+        0,
+        0,
+        8.5,
+        11,
+        undefined,
+        "FAST"
+      );
+
+    }
+
+
+    /*
+    Download the completed PDF.
+    */
+
+    pdf.save(
+      buildPdfFilename(
+        data.location
+      )
+    );
 
   } finally {
 
