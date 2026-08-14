@@ -1529,23 +1529,26 @@ async function exportDignitaryPdf(
   Keep the temporary HTML off-screen.
   */
 
-  pdfRoot.style.position =
-    "fixed";
+pdfRoot.style.position =
+  "absolute";
 
-  pdfRoot.style.left =
-    "-100000px";
+pdfRoot.style.left =
+  "0";
 
-  pdfRoot.style.top =
-    "0";
+pdfRoot.style.top =
+  "0";
 
-  pdfRoot.style.width =
-    "8.5in";
+pdfRoot.style.width =
+  "8.5in";
 
-  pdfRoot.style.background =
-    "#ffffff";
+pdfRoot.style.background =
+  "#ffffff";
 
-  pdfRoot.style.zIndex =
-    "-1";
+pdfRoot.style.zIndex =
+  "9999";
+
+pdfRoot.style.pointerEvents =
+  "none";
 
 
   document.body.appendChild(
