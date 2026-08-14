@@ -1500,31 +1500,71 @@ async function exportDignitaryPdf(
   data
 ) {
 
+  /*
+  html2pdf.bundle includes html2canvas and jsPDF.
+  */
+
   if (
-    typeof html2canvas === "undefined"
+    typeof html2pdf === "undefined"
   ) {
 
     throw new Error(
-      "html2canvas is not loaded."
-    );
-
-  }
-
-
-  if (
-    typeof window.jspdf === "undefined"
-  ) {
-
-    throw new Error(
-      "jsPDF is not loaded."
+      "html2pdf.js is not loaded."
     );
 
   }
 
 
   /*
-  Create a temporary HTML document
-  specifically for the PDF.
+  Get the bundled libraries directly.
+
+  Different versions expose jsPDF slightly
+  differently, so support both common forms.
+  */
+
+  const html2canvasFunction =
+    typeof html2canvas !== "undefined"
+      ? html2canvas
+      : null;
+
+
+  const jsPDFConstructor =
+    window.jspdf &&
+    window.jspdf.jsPDF
+      ? window.jspdf.jsPDF
+      : (
+          window.jsPDF
+            ? window.jsPDF
+            : null
+        );
+
+
+  if (
+    !html2canvasFunction
+  ) {
+
+    throw new Error(
+      "html2canvas is not available. " +
+      "Make sure html2pdf.bundle.min.js is loaded."
+    );
+
+  }
+
+
+  if (
+    !jsPDFConstructor
+  ) {
+
+    throw new Error(
+      "jsPDF is not available. " +
+      "Make sure html2pdf.bundle.min.js is loaded."
+    );
+
+  }
+
+
+  /*
+  Create the temporary PDF document.
   */
 
   const pdfRoot =
@@ -1537,16 +1577,18 @@ async function exportDignitaryPdf(
 
 
   /*
-  Keep the PDF document in the DOM while
-  html2canvas renders it, but place it
-  safely outside the visible page.
+  IMPORTANT:
+  Keep the element inside the viewport.
+
+  html2canvas can have problems rendering
+  elements positioned far outside the viewport.
   */
 
   pdfRoot.style.position =
-    "fixed";
+    "absolute";
 
   pdfRoot.style.left =
-    "-10000px";
+    "0";
 
   pdfRoot.style.top =
     "0";
@@ -1558,7 +1600,7 @@ async function exportDignitaryPdf(
     "#ffffff";
 
   pdfRoot.style.zIndex =
-    "-1";
+    "999999";
 
   pdfRoot.style.pointerEvents =
     "none";
@@ -1606,7 +1648,7 @@ async function exportDignitaryPdf(
 
 
     /*
-    Create the first page.
+    Create first page.
     */
 
     let currentPage =
@@ -1638,8 +1680,7 @@ async function exportDignitaryPdf(
 
 
     /*
-    Each remaining group begins on a
-    new page.
+    Create the remaining group pages.
     */
 
     for (
@@ -1680,7 +1721,7 @@ async function exportDignitaryPdf(
 
 
     /*
-    Find every manually-created PDF page.
+    Get the pages we manually created.
     */
 
     const pages =
@@ -1696,28 +1737,24 @@ async function exportDignitaryPdf(
     ) {
 
       throw new Error(
-        "No PDF pages were created."
+        "PDF export created zero pages."
       );
 
     }
 
 
-    /*
-    Create the jsPDF document directly.
+    console.log(
+      "PDF pages created:",
+      pages.length
+    );
 
-    We are deliberately NOT using html2pdf here.
-    html2canvas renders each already-created
-    page individually, and jsPDF assembles
-    those images into the final PDF.
+
+    /*
+    Create the actual PDF.
     */
 
-    const {
-      jsPDF
-    } = window.jspdf;
-
-
     const pdf =
-      new jsPDF(
+      new jsPDFConstructor(
         {
           unit:
             "in",
@@ -1735,7 +1772,8 @@ async function exportDignitaryPdf(
 
 
     /*
-    Render every PDF page separately.
+    Render each already-created PDF page
+    separately.
     */
 
     for (
@@ -1751,8 +1789,42 @@ async function exportDignitaryPdf(
       await waitForPdfLayout();
 
 
+      const rect =
+        page.getBoundingClientRect();
+
+
+      console.log(
+        `Rendering PDF page ${pageIndex + 1}:`,
+        {
+          width:
+            rect.width,
+
+          height:
+            rect.height,
+
+          scrollWidth:
+            page.scrollWidth,
+
+          scrollHeight:
+            page.scrollHeight
+        }
+      );
+
+
+      if (
+        rect.width <= 0 ||
+        rect.height <= 0
+      ) {
+
+        throw new Error(
+          `PDF page ${pageIndex + 1} has zero dimensions.`
+        );
+
+      }
+
+
       const canvas =
-        await html2canvas(
+        await html2canvasFunction(
           page,
           {
             scale:
@@ -1767,29 +1839,31 @@ async function exportDignitaryPdf(
             logging:
               false,
 
-            /*
-            Explicitly tell html2canvas
-            the dimensions of the element
-            being rendered.
-            */
-
             width:
-              page.scrollWidth,
+              Math.ceil(
+                rect.width
+              ),
 
             height:
-              page.scrollHeight,
+              Math.ceil(
+                rect.height
+              ),
 
             windowWidth:
-              page.scrollWidth,
+              Math.max(
+                document.documentElement.clientWidth,
+                Math.ceil(
+                  rect.width
+                )
+              ),
 
             windowHeight:
-              page.scrollHeight,
-
-            x:
-              0,
-
-            y:
-              0,
+              Math.max(
+                document.documentElement.clientHeight,
+                Math.ceil(
+                  rect.height
+                )
+              ),
 
             scrollX:
               0,
@@ -1800,26 +1874,35 @@ async function exportDignitaryPdf(
         );
 
 
-      /*
-      Make sure the canvas actually contains
-      something before adding it to the PDF.
-      */
+      console.log(
+        `Canvas created for PDF page ${pageIndex + 1}:`,
+        {
+          width:
+            canvas.width,
+
+          height:
+            canvas.height
+        }
+      );
+
 
       if (
-        canvas.width === 0 ||
-        canvas.height === 0
+        canvas.width <= 0 ||
+        canvas.height <= 0
       ) {
 
         throw new Error(
-          `PDF page ${pageIndex + 1} rendered with zero dimensions.`
+          `PDF page ${pageIndex + 1} produced an empty canvas.`
         );
 
       }
 
 
       /*
-      The first jsPDF page already exists.
-      Additional pages must be added manually.
+      The jsPDF constructor automatically creates
+      the first page.
+
+      Add subsequent pages manually.
       */
 
       if (
@@ -1835,8 +1918,8 @@ async function exportDignitaryPdf(
 
 
       /*
-      Place the rendered page exactly
-      inside the letter-size PDF page.
+      Put the rendered canvas onto the entire
+      8.5 x 11 inch PDF page.
       */
 
       pdf.addImage(
@@ -1853,9 +1936,10 @@ async function exportDignitaryPdf(
     }
 
 
-    /*
-    Download the completed PDF.
-    */
+    console.log(
+      "Saving PDF..."
+    );
+
 
     pdf.save(
       buildPdfFilename(
@@ -1863,12 +1947,12 @@ async function exportDignitaryPdf(
       )
     );
 
-  } finally {
 
-    /*
-    Remove the temporary PDF HTML
-    from the website.
-    */
+    console.log(
+      "PDF saved successfully."
+    );
+
+  } finally {
 
     pdfRoot.remove();
 
